@@ -11,13 +11,13 @@ app = Flask(__name__)
 
 # Set Configurations
 secret_key = getenv('SECRET_KEY')
-db_uri = getenv('DATABASE_URI')
+db_uri = getenv('DATABASE_URL')
 sql_track_modification = getenv('SQLALCHEMY_TRACK_MODIFICATIONS')
 cors_headers = ['content-type', 'x-client-token']
 
 # Activate Configurations
 app.config['SECRET_KEY'] = secret_key
-app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
+app.config['SQLALCHEMY_DATABASE_URL'] = db_uri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = sql_track_modification
 
 # Activate Extensions
