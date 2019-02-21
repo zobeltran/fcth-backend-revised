@@ -19,6 +19,7 @@ gunicorn = "*"
 eventlet = "*"
 flask-restplus = "*"
 flask-bcrypt = "*"
+flask-mail = "*"
 
 [requires]
 python_version = "3.7"
