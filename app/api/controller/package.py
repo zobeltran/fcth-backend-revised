@@ -63,7 +63,7 @@ class PackageApi(Resource):
         data = api.payload
         try:
             name = data['name']
-            days = int(data['details']['data'])
+            days = int(data['details']['days'])
             itinerary = data['details']['itinerary']
             inclusions = data['details']['inclusions']
             notes = data['details']['notes']
