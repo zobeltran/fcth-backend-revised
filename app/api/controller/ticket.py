@@ -61,14 +61,14 @@ class TicketApi(Resource):
         try:
             flight_number = data['flightNo']
             origin_location = data['origin']['location']
-            origin_date = parse(data['origin']['date'])
-            origin_time = parse(data['origin']['time'])
+            origin_date = data['origin']['date']
+            origin_time = data['origin']['time']
             return_location = data['return']['location']
-            return_date = parse(data['return']['date'])
-            return_time = parse(data['return']['time'])
+            return_date = data['return']['date']
+            return_time = data['return']['time']
             remaining_slots = data['remainingSlots']
-            price = float(data['price'])
-            expiration_date = parse(data['expirationDate'])
+            price = data['price']
+            expiration_date = data['expirationDate']
             is_packaged = data['isPackaged']
             if data:
                 if (not flight_number or
@@ -101,31 +101,31 @@ class TicketApi(Resource):
                     return {'errors': {'status': 400,
                                        'errorCode': 'E0002',
                                        'message': errors}}, 400
-                elif (origin_date <= now or 
-                        return_date <= now or
-                        return_date <= origin_date or
-                        expiration_date <= now or
-                        expiration_date >= origin_date or
-                        remaining_slots <= 0 or
-                        price <= 0 or
-                        expiration_date >= origin_date):
-                    if origin_date <= now:
+                elif (parse(origin_date) <= now or 
+                        parse(return_date) <= now or
+                        parse(return_date) <= parse(origin_date) or
+                        parse(expiration_date) <= now or
+                        parse(expiration_date) >= parse(origin_date) or
+                        int(remaining_slots) <= 0 or
+                        float(price) <= 0 or
+                        parse(expiration_date) >= parse(origin_date)):
+                    if parse(origin_date) <= now:
                         errors.append('Departure date must not be less or equal '
                                       'to today\'s date')
-                    if return_date <= now:
+                    if parse(return_date) <= now:
                         errors.append('Return date must not be less or equal '
                                       'to today\s date')
-                    if return_date <= origin_date:
+                    if parse(return_date) <= parse(origin_date):
                         errors.append('Return date must not be less or equal '
                                       'to departure date')
-                    if remaining_slots <= 0:
+                    if int(remaining_slots) <= 0:
                         errors.append('Remaining slots must be greater than zero')
-                    if price <= 0:
+                    if float(price) <= 0:
                         errors.append('Price must be greater than zero')
-                    if expiration_date <= now:
+                    if parse(expiration_date) <= now:
                         errors.append('Expiration date must be not be less ir equal '
                                       'to today\'s date')
-                    if expiration_date >= origin_date:
+                    if parse(expiration_date) >= parse(origin_date):
                         errors.append('Expiration date must not be greater or '
                                       'equal to departure date')
                     return {'errors': {'status': 400,
