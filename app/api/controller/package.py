@@ -308,7 +308,7 @@ class PackageApprovalApi(Resource):
                             return {'message': "Successfully Approved"}, 200
                         else:
                             return {'message': "Package not Approved"}, 200
-                     else:
+                    else:
                         errors.append('Package not existing')
                         return {'errors': {'status': 400,
                                            'errorCode': 'E2002',
