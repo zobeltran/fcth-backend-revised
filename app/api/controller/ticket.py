@@ -128,6 +128,9 @@ class TicketApi(Resource):
                     if expiration_date >= origin_date:
                         errors.append('Expiration date must not be greater or '
                                       'equal to departure date')
+                    return {'errors': {'status': 400,
+                                       'errorCode': 'E0002',
+                                       'message': errors}}, 400
                 else:
                     new_ticket = Ticket(flightNo=flight_number,
                                         origin=origin_location,
@@ -274,7 +277,7 @@ class TicketApi(Resource):
                                 ticket.expirationDate = expiration_date
                                 ticket.isPackaged = is_packaged
                                 db.session.commit()
-                                return {'message': 'Successfully updated ticket'}, 201
+                                return {'message': 'Successfully updated ticket'}, 200
                 else:
                     errors.append('Parameter in the query string must be an integer')
                     return {'errors': {'status': 400,
@@ -337,6 +340,44 @@ class TicketApprovalApi(Resource):
             return {'errors': {'status': 400,
                                'errorCode': 'E0001',
                                'message': errors}}, 400
+
+    @api.doc(security='apiKey', responses={200: 'Success',
+                                           400: 'Bad Request'})
+    @token_required
+    @api.marshal_list_with(a_ticket_details, envelope='flights')
+    def get(self):
+        flights = (Ticket.query.filter(Ticket.isArchived.is_(False))
+                   .filter(Ticket.isExpired.is_(False))
+                   .filter(Ticket.isPackaged.is_(False))
+                   .filter(Ticket.isApproved.is_(False)).all())
+        view_flights = []
+        for flight in flights:
+            view_flights.append(
+                {
+                    'id': flight.id,
+                    'flightNo': flight.flightNo,
+                    'origin': {
+                        'location': flight.origin,
+                        'date': flight.departureDate,
+                        'time': flight.departureTime
+                    },
+                    'return': {
+                        'location': flight.arrival,
+                        'date': flight.returnDate,
+                        'time': flight.returnTime
+                    },
+                    'remainingSlots': flight.remainingSlots,
+                    'price': flight.price,
+                    'expirationDate': flight.expirationDate,
+                    'isExpired': flight.isExpired,
+                    'isPackaged': flight.isPackaged,
+                    'timestamp': {
+                        'dateCreated': flight.dateCreated,
+                        'dateUpdated': flight.dateUpdated
+                    }
+                }
+            )
+        return view_flights, 200
 
 @api.route('/id=<int:id>')
 @api.response(404, 'Not Found')
