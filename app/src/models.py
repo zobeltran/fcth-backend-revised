@@ -18,6 +18,12 @@ class User(db.Model):
     dateUpdated = db.Column('DateUpdated', db.DateTime, onupdate=db.func.now(),
                             default=db.func.now())
     isArchived = db.Column('IsArchived', db.Boolean, default=False)
+    hotelBooking = db.relationship("HotelBooking", backref='User',
+                                   lazy=True)
+    flightBooking = db.relationship("FlightBooking", backref='User',
+                                    lazy=True)
+    packageBooking = db.relationship("PackageBooking", backref='User',
+                                     lazy=True)
 
     __tablename__ = 'users'
 
@@ -186,7 +192,7 @@ class PackageBooking(db.Model):
     id = db.Column("Id", db.Integer, primary_key=True)
     referenceNumber = db.Column("ReferenceNumber", db.String(50))
     customer = db.Column('CustomersFk', db.Integer,
-                         db.ForeignKey('customers.Id'))
+                         db.ForeignKey('users.Id'))
     package = db.Column('PackagesFk', db.Integer, db.ForeignKey('packages.Id'))
     isPaid = db.Column('IsPaid', db.Boolean, default=False)
 
@@ -198,7 +204,7 @@ class HotelBooking(db.Model):
     id = db.Column("Id", db.Integer, primary_key=True)
     referenceNumber = db.Column("ReferenceNumber", db.String(50))
     customer = db.Column('CustomersFk', db.Integer,
-                         db.ForeignKey('customers.Id'))
+                         db.ForeignKey('users.Id'))
     hotel = db.Column('HotelsFk', db.Integer, db.ForeignKey('hotels.Id'))
     isPaid = db.Column('IsPaid', db.Boolean, default=False)
 
@@ -210,7 +216,7 @@ class FlightBooking(db.Model):
     id = db.Column("Id", db.Integer, primary_key=True)
     referenceNumber = db.Column("ReferenceNumber", db.String(50))
     customer = db.Column('CustomersFk', db.Integer,
-                         db.ForeignKey('customers.Id'))
+                         db.ForeignKey('users.Id'))
     flight = db.Column('FlightFk', db.Integer, db.ForeignKey('tickets.Id'))
     isPaid = db.Column('IsPaid', db.Boolean, default=False)
 
