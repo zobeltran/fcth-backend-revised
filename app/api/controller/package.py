@@ -106,11 +106,11 @@ class PackageApi(Resource):
                     return {'errors': {'status': 400,
                                        'errorCode': 'E0002',
                                        'message': errors}}, 400
-                elif (expiration_date >= now or
+                elif (expiration_date <= now or
                         price <= 0 or
                         remaining_slots <= 0):
-                    if expiration_date >= now:
-                        errors.append('Expiration date must be not be less ir equal '
+                    if expiration_date <= now:
+                        errors.append('Expiration date must be not be less is equal '
                                       'to today\'s date')
                     if price <= 0:
                         errors.append('Price must be greater than zero')
