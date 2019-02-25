@@ -11,7 +11,7 @@ app = Flask(__name__)
 
 # Set Configurations
 secret_key = getenv('SECRET_KEY')
-db_uri = getenv('DATABASE_URI')
+db_uri = getenv('DATABASE_URL')
 sql_track_modification = getenv('SQLALCHEMY_TRACK_MODIFICATIONS')
 cors_headers = ['content-type', 'x-client-token']
 
@@ -24,6 +24,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = sql_track_modification
 db.init_app(app)
 migrate = Migrate(app, db)
 bcrypt.init_app(app)
+cors = CORS(app, allow_headers='*', expose_headers='*')
 
 # Main Routes
 app.register_blueprint(api_v1_routes)

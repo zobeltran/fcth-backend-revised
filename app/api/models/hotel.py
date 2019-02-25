@@ -38,7 +38,9 @@ a_create_hotel = api.model('Create Hotel',
                             'checkDates': fields.Nested(a_hotel_check_date),
                             'price': fields.Float(),
                             'expirationDate': fields.Date(),
-                            'isExpired': fields.Boolean(),
                             'isPackaged': fields.Boolean(),
                             'remainingRooms': fields.Integer(),
                            })
+
+a_approve_hotel = api.model('Approve Hotel',
+                            {'isApproved': fields.Boolean()})
