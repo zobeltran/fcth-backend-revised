@@ -367,21 +367,21 @@ class PackageApprovalApi(Resource):
             )
         return view_packages, 200
 
-@api.route('/approval/hotels')
+@api.route('/hotels')
 @api.response(404, 'Not Found')
 class PackageApprovalHotelApi(Resource):
     """Resource class for Package Approval Hotel APIs"""
 
     @api.doc(security='apiKey', responses={200: 'Success', 400: 'Bad Request'})
     @token_required
-    @api.marshal_list_with(a_hotel_details)
+    @api.marshal_list_with(a_hotel_details, envelope="hotels")
     def get(self):
         hotels = (Hotel.query.filter(Hotel.isPackaged.is_(True))
                  .filter(Hotel.isArchived.is_(False))
                  .filter(Hotel.isExpired.is_(False)))
         view_hotels = []
         for hotel in hotels:
-            view_hotel.append(
+            view_hotels.append(
                 {
                     'id': hotel.id,
                     'name': hotel.name,
@@ -390,14 +390,14 @@ class PackageApprovalHotelApi(Resource):
                 })
         return view_hotels, 200
 
-@api.route('/approval/tickets')
+@api.route('/tickets')
 @api.response(404, 'Not Found')
 class PackageApprovalTicketApi(Resource):
     """Resource class for Package Approval Hotel APIs"""
 
     @api.doc(security='apiKey', responses={200: 'Success', 400: 'Bad Request'})
     @token_required
-    @api.marshal_list_with(a_ticket_details)
+    @api.marshal_list_with(a_ticket_details, envelope="flights")
     def get(self):
         tickets = (Ticket.query.filter(Ticket.isPackaged.is_(True))
                   .filter(Ticket.isArchived.is_(False))
