@@ -169,6 +169,9 @@ class Package(db.Model):
     isArchived = db.Column('IsArchived', db.Boolean, default=False)
     isExpired = db.Column('isExpired', db.Boolean, default=False)
     isApproved = db.Column('IsApproved', db.Boolean, default=False)
+    dateCreated = db.Column('DateCreated', db.DateTime, default=db.func.now())
+    dateUpdated = db.Column('DateUpdated', db.DateTime, onupdate=db.func.now(),
+                            default=db.func.now())
     packageBooking = db.relationship("PackageBooking", backref='Package',
                                      lazy=True)
 
