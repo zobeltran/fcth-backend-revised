@@ -10,7 +10,7 @@ a_timestamp = api.model('Timestamp',
 a_ticket_details = api.model('Ticket Package Details', 
                             {'id': fields.Integer(),
                              'flightNo': fields.String(),
-                             'orgin': fields.String(),
+                             'origin': fields.String(),
                              'destination': fields.String()
                              })
 
