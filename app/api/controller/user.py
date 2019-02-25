@@ -59,11 +59,18 @@ class AuthenticationApi(Resource):
                                     {'token': token.decode('utf-8'),
                                      'role': role
                                     }}, 200
-                errors.append('User not found')
-                return {'errors': {'statusCode': 400,
-                                   'errorCode': 'A005',
-                                   'message': errors
-                                   }}, 400
+                    else:
+                        errors.append('Password invalid')
+                        return {'errors': {'statusCode': 400,
+                                        'errorCode': 'A005',
+                                        'message': errors
+                                        }}, 400
+                else:
+                    errors.append('User not found')
+                    return {'errors': {'statusCode': 400,
+                                    'errorCode': 'A005',
+                                    'message': errors
+                                    }}, 400
         except KeyError:
             errors.append('Incomplete json nodes')
             return {'errors': {'status': 400,
