@@ -107,12 +107,6 @@ class Customer(db.Model):
     email = db.Column("Email", db.String(100))
     contactNo = db.Column("Contact", db.String(50))
     isArchived = db.Column('IsArchived', db.Boolean, default=False)
-    hotelBooking = db.relationship("HotelBooking", backref='Customer',
-                                   lazy=True)
-    flightBooking = db.relationship("FlightBooking", backref='Customer',
-                                    lazy=True)
-    packageBooking = db.relationship("PackageBooking", backref='Customer',
-                                     lazy=True)
 
     __tablename__ = "customers"
 
