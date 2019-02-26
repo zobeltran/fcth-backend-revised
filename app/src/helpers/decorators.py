@@ -13,6 +13,8 @@ authentication = {
     }
 }
 
+referenceNumber = datetime.now().strftime("%Y%m%d%H%M%S")
+
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -35,3 +37,16 @@ def token_required(f):
                                'message': 'Invalid Token'}}, 401
         return f(*args, **kwargs)
     return decorated
+
+def token_details(token):
+    try:
+        decoded = jwt.decode(token, secret_key)
+        return decoded
+    except jwt.exceptions.ExpiredSignatureError:
+            return {'errors': {'statusCode': 401,
+                               'errorCode': 'A002',
+                               'message': 'Expired Token'}}, 401
+    except jwt.exceptions.InvalidTokenError:
+        return {'errors': {'statusCode': 401,
+                           'errorCode': 'A003',
+                           'message': 'Invalid Token'}}, 401
