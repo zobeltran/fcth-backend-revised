@@ -29,7 +29,7 @@ class HotelApi(Resource):
         hotels = (Hotel.query.filter(Hotel.isArchived.is_(False))
                   .filter(Hotel.isExpired.is_(False))
                   .filter(Hotel.isPackaged.is_(False))
-                  .filter(Hotel.isApproved.is_(False)).all())
+                  .filter(Hotel.isApproved.is_(True)).all())
         view_hotels = []
         for hotel in hotels:
             view_hotels.append(
