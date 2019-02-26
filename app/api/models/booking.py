@@ -39,7 +39,7 @@ a_ticket_booking_details = api.model('Ticket Booking Details',
                                       'status': fields.String()
                                       })
 
-a_ticket_booking = api.mode('Ticket Booking',
+a_ticket_booking = api.model('Ticket Booking',
                             {'ticket': fields.Integer()})
 
 a_hotel_room = api.model('Room Details', 
