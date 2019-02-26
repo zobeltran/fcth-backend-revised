@@ -87,7 +87,7 @@ class HotelBookingApi(Resource):
     @api.doc(security='apiKey',
              responses={200: 'Success',
                         400: 'Bad Request'})
-    @token_required()
+    @token_required
     @api.marshal_list_with(a_hotel_booking_details, envelope='hotels')
     def get(self):
         token = token_details(request.headers['x-client-token'])
@@ -155,7 +155,7 @@ class HotelBookingApi(Resource):
 class PackageBookingApi(Resource):
     @api.doc(security='apiKey', responses={200: 'Success',
                                            400: 'Bad Request'})
-    @token_required()
+    @token_required
     @api.marshal_list_with(a_package_booking_details)
     def get(self):
         token = token_details(request.headers['x-client-token'])
