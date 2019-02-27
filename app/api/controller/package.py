@@ -24,7 +24,7 @@ class PackageApi(Resource):
         view_packages = []
         for package in packages:
             ticket = Ticket.query.get(package.flight)
-            hotel = Ticket.query.get(package.hotel)
+            hotel = Hotel.query.get(package.hotel)
             view_packages.append(
                 {
                     'id': package.id,
