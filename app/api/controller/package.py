@@ -304,7 +304,7 @@ class PackageApprovalApi(Resource):
                     package = Package.query.get(id)
                     if package:
                         approve = data['isApprove']
-                        package.isApprove = approve
+                        package.isApproved = approve
                         db.session.commit()
                         if approve:
                             return {'message': "Successfully Approved"}, 200
