@@ -28,6 +28,7 @@ class PackageApi(Resource):
             view_packages.append(
                 {
                     'id': package.id,
+                    'name': package.destination
                     'details': {
                         'days': package.days,
                         'itinerary': package.intenerary,
@@ -39,7 +40,7 @@ class PackageApi(Resource):
                         'id': ticket.id,
                         'flightNo': ticket.flightNo,
                         'origin': ticket.origin,
-                        'departure': ticket.arrival
+                        'destination': ticket.arrival
                     },
                     'hotel': {
                         'id': hotel.id,
@@ -48,7 +49,8 @@ class PackageApi(Resource):
                         'capacity': hotel.capacity
                     },
                     'remainingSlots': package.remainingSlots,
-                    'expirationDate': package.expirationDate
+                    'expirationDate': package.expirationDate,
+                    'isExpired': package.isExpired
                 }
             )
         return view_packages, 200
@@ -342,6 +344,7 @@ class PackageApprovalApi(Resource):
             view_packages.append(
                 {
                     'id': package.id,
+                    'name': package.destination
                     'details': {
                         'days': package.days,
                         'itinerary': package.intenerary,
@@ -353,7 +356,7 @@ class PackageApprovalApi(Resource):
                         'id': ticket.id,
                         'flightNo': ticket.flightNo,
                         'origin': ticket.origin,
-                        'departure': ticket.arrival
+                        'destination': ticket.arrival
                     },
                     'hotel': {
                         'id': hotel.id,
@@ -362,7 +365,8 @@ class PackageApprovalApi(Resource):
                         'capacity': hotel.capacity
                     },
                     'remainingSlots': package.remainingSlots,
-                    'expirationDate': package.expirationDate
+                    'expirationDate': package.expirationDate,
+                    'isExpired': package.isExpired
                 }
             )
         return view_packages, 200
