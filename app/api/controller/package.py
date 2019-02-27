@@ -28,7 +28,7 @@ class PackageApi(Resource):
             view_packages.append(
                 {
                     'id': package.id,
-                    'name': package.destination
+                    'name': package.destination,
                     'details': {
                         'days': package.days,
                         'itinerary': package.intenerary,
@@ -344,7 +344,7 @@ class PackageApprovalApi(Resource):
             view_packages.append(
                 {
                     'id': package.id,
-                    'name': package.destination
+                    'name': package.destination,
                     'details': {
                         'days': package.days,
                         'itinerary': package.intenerary,
