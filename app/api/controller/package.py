@@ -303,7 +303,7 @@ class PackageApprovalApi(Resource):
                 if id.isdigit():
                     package = Package.query.get(id)
                     if package:
-                        approve = data['isApprove']
+                        approve = data['isApproved']
                         package.isApproved = approve
                         db.session.commit()
                         if approve:
