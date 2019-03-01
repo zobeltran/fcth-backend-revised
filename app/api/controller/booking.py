@@ -72,7 +72,7 @@ class TicketBookingApi(Resource):
             else:
                 new_booking = FlightBooking(referenceNumber='TBK' + referenceNumber,
                                             customer=user.id,
-                                            ticket=ticket)
+                                            flight=ticket)
                 ticket = Ticket.query.get(ticket)
                 ticket.remainingSlots = ticket.remainingSlots - 1
                 db.session.add(new_booking)
