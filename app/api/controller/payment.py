@@ -1,4 +1,4 @@
-from flask_restplus import Resource,
+from flask_restplus import Resource
 from app.src.models import db, Payments, Hotel, Ticket, Package
 from app.src.models import FlightBooking, HotelBooking, PackageBooking
 from app.src.models import StripeCustomer
