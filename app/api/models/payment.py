@@ -11,7 +11,7 @@ a_stripe_details = api.model('Charge Details',
 
 a_create_stripe_charges = api.model('Create Charges',
                                     {
-                                     'referenceNumber': fields.String()
+                                     'referenceNumber': fields.String(),
                                      'token': fields.String(),
                                      'email': fields.String(),
                                      'amount': fields.Decimal(),
