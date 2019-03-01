@@ -1,6 +1,6 @@
 from flask_restplus import Namespace, fields
 
-api = Namespace('Payments', 'Payment Related APIs', path='/payments')
+api = Namespace('Payments', 'Payments related APIs', path='/payments')
 
 a_stripe_details = api.model('Charge Details',
                              {'id': fields.Integer(),
@@ -14,7 +14,7 @@ a_create_stripe_charges = api.model('Create Charges',
                                      'referenceNumber': fields.String(),
                                      'token': fields.String(),
                                      'email': fields.String(),
-                                     'amount': fields.Decimal(),
+                                     'amount': fields.Float(),
                                      'description': fields.String(),
                                      'paymentFor': fields.String()
                                      })

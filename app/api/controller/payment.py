@@ -16,7 +16,7 @@ stripe.api_key = secretkey
 
 @api.route('')
 @api.response(404, 'Not Found')
-class PaymentsApi(Resource):
+class PaymentApi(Resource):
     @api.doc(security='apiKey', responses={200: 'Success',
                                            400: 'Bad Request'
                                           })
@@ -25,13 +25,13 @@ class PaymentsApi(Resource):
     def post(self):
         error.clear()
         data = api.payload
-        booking = data['referenceNumber']
-        email = data['email']
-        token = data['token']
-        amount = data['amount']
-        description = data['description']
-        paymentFor = data['paymentFor']
         try:
+            booking = data['referenceNumber']
+            email = data['email']
+            token = data['token']
+            amount = data['amount']
+            description = data['description']
+            paymentFor = data['paymentFor']
             customer = (StripeCustomer.query
                     .filter(StripeCustomer.email == email).first())
             if customer is None:
