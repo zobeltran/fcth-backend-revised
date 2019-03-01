@@ -3,7 +3,7 @@ from app.src.models import db, Payments, Hotel, Ticket, Package
 from app.src.models import FlightBooking, HotelBooking, PackageBooking
 from app.src.models import StripeCustomer
 from app.api.models.payment import api, a_create_stripe_charges, a_stripe_details
-from app.src.helpers.decorators import referenceNumber
+from app.src.helpers.decorators import referenceNumber, token_required
 import stripe
 from flask import request
 
