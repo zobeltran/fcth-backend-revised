@@ -91,7 +91,7 @@ class HotelBookingApi(Resource):
     @api.marshal_list_with(a_hotel_booking_details, envelope='hotels')
     def get(self):
         token = token_details(request.headers['x-client-token'])
-        user = User.query.filter(user.publicId==token['sub']).first()
+        user = User.query.filter(User.publicId==token['sub']).first()
         hotel_bookings = HotelBooking.query.filter(HotelBooking.customer==user.id).all()
         view_hotels = []
         for hotel in hotel_bookings:
