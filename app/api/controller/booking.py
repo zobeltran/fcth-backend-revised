@@ -73,6 +73,8 @@ class TicketBookingApi(Resource):
                 new_booking = FlightBooking(referenceNumber=referenceNumber,
                                             customer=user.id,
                                             ticket=ticket)
+                ticket = Ticket.query.get(ticket)
+                ticket.remainingSlots = ticket.remainingSlots - 1
                 db.session.add(new_booking)
                 db.session.commit()
                 return {'message': 'You have successfully booked a ticket'}
