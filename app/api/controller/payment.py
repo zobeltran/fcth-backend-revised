@@ -51,7 +51,7 @@ class PaymentApi(Resource):
             new_payment = Payments(paymentReference='PC' + referenceNumber,
                                 bookingReference=booking,
                                 paymentFor=paymentFor,
-                                StripeCustomer=customer.id,
+                                stripeCustomer=customer.id,
                                 stripeChargeId=charge.id)
             db.session.add(new_payment)
             db.session.commit()
