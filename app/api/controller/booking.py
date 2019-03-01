@@ -146,7 +146,7 @@ class HotelBookingApi(Resource):
                                            customer=user.id,
                                            hotel=hotel)
                 hotel = Hotel.query.get(hotel)
-                hotel.remainingSlots = hotel.remainingSlots - 1
+                hotel.remainingRooms = hotel.remainingRooms - 1
                 db.session.add(new_booking)
                 db.session.commit()
                 return {'message': 'You have successfully booked a Hotel'}
