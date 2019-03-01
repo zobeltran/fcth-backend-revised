@@ -23,7 +23,7 @@ class PaymentApi(Resource):
     @token_required
     @api.expect(a_create_stripe_charges)
     def post(self):
-        error.clear()
+        errors.clear()
         data = api.payload
         try:
             booking = data['referenceNumber']
