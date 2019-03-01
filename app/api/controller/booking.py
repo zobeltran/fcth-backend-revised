@@ -47,7 +47,8 @@ class TicketBookingApi(Resource):
                         'price': packaged_ticket.price,
                         'expirationDate': packaged_ticket.expirationDate
                     },
-                    'isPaid': ticket.isPaid
+                    'isPaid': ticket.isPaid,
+                    'status': ""
                 }
             )
         return view_tickets, 200
@@ -93,6 +94,7 @@ class HotelBookingApi(Resource):
         token = token_details(request.headers['x-client-token'])
         user = User.query.filter(User.publicId==token['sub']).first()
         hotel_bookings = HotelBooking.query.filter(HotelBooking.customer==user.id).all()
+        print(hotel_bookings)
         view_hotels = []
         for hotel in hotel_bookings:
             packaged_hotel = Hotel.query.get(hotel.hotel)

@@ -33,7 +33,7 @@ a_ticket_details = api.model('Ticket Details',
 a_ticket_booking_details = api.model('Ticket Booking Details',
                                      {'id': fields.Integer(),
                                       'referenceNumber': fields.String(),
-                                      'customer': fields.Nested(a_user_details),
+                                    #   'customer': fields.Nested(a_user_details),
                                       'ticket': fields.Nested(a_ticket_details),
                                       'isPaid': fields.Boolean(),
                                       'status': fields.String()
