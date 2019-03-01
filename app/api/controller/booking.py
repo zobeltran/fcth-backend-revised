@@ -70,7 +70,7 @@ class TicketBookingApi(Resource):
                                    'errorCode': 'E0002',
                                    'message': errors}}, 400
             else:
-                new_booking = FlightBooking(referenceNumber=referenceNumber,
+                new_booking = FlightBooking(referenceNumber='TBK' + referenceNumber,
                                             customer=user.id,
                                             ticket=ticket)
                 ticket = Ticket.query.get(ticket)
@@ -142,7 +142,7 @@ class HotelBookingApi(Resource):
                                    'errorCode': 'E0002',
                                    'message': errors}}, 400
             else:
-                new_booking = HotelBooking(referenceNumber=referenceNumber,
+                new_booking = HotelBooking(referenceNumber='HBK' + referenceNumber,
                                            customer=user.id,
                                            hotel=hotel)
                 hotel = Hotel.query.get(hotel)
@@ -222,9 +222,11 @@ class PackageBookingApi(Resource):
                                    'errorsCode': 'E0002',
                                    'message': errors}}
             else:
-                new_booking = PackageBooking(referenceNumber=referenceNumber,
+                new_booking = PackageBooking(referenceNumber='PBK' + referenceNumber,
                                              customer=user.id,
                                              package=package)
+                package = Package.query.get(package)
+                package.remainingSlots = package.remainingSlots - 1
                 db.session.add(new_booking)
                 db.session.commit()
         except KeyError:
