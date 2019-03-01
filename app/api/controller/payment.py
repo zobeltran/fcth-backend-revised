@@ -45,7 +45,7 @@ class PaymentApi(Resource):
                 customer = (StripeCustomer.query
                             .filter(StripeCustomer.email == email).first())
             charge = stripe.Charge.create(customer=customer.stripeCustomerId,
-                                        amount=price * 100,
+                                        amount=amount,
                                         currency='php',
                                         description=description)
             new_payment = Payments(paymentReference='PC' + referenceNumber,
