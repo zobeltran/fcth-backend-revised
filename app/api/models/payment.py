@@ -6,7 +6,7 @@ a_stripe_details = api.model('Charge Details',
                              {'id': fields.Integer(),
                               'paymentReference': fields.String(),
                               'bookingReference': fields.String(),
-                              'paymentFor': fields.String(),
+                              'paymentFor': fields.String()
                              })
 
 a_create_stripe_charges = api.model('Create Charges',
