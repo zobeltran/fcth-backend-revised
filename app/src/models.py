@@ -119,9 +119,8 @@ class Customer(db.Model):
 # Flight Inquiry
 class FlightInquiry(db.Model):
     id = db.Column("Id", db.Integer, primary_key=True)
-    firstName = db.Column("FirstName", db.String(100))
-    lastName = db.Column("lastName", db.String(100))
-    email = db.Column("Email", db.String(100))
+    customer = db.Column('CustomersFk', db.Integer,
+                         db.ForeignKey('users.Id'))
     origin = db.Column("Origin", db.String(100))
     arrival = db.Column("Arrival", db.String(100))
     departureDate = db.Column("DepartureDate", db.Date)
@@ -139,9 +138,8 @@ class FlightInquiry(db.Model):
 # Hotel Inquiry
 class HotelInquiry(db.Model):
     id = db.Column("Id", db.Integer, primary_key=True)
-    firstName = db.Column("FirstName", db.String(100))
-    lastName = db.Column("lastName", db.String(100))
-    email = db.Column("Email", db.String(100))
+    customer = db.Column('CustomersFk', db.Integer,
+                         db.ForeignKey('users.Id'))
     location = db.Column("Location", db.String(100))
     budget = db.Column("Budget", db.Float(asdecimal=True))
     guest = db.Column("Guest", db.Integer)
