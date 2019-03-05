@@ -50,7 +50,7 @@ class PaymentApi(Resource):
                                         amount=int(amount/100),
                                         currency='php',
                                         description=description)
-            payment_reference = PC' + referenceNumber
+            payment_reference = 'PC' + referenceNumber
             new_payment = Payments(paymentReference=payment_reference,
                                 bookingReference=booking,
                                 paymentFor=paymentFor,
