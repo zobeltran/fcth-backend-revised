@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "C:\\Users\\renzo\\.virtualenvs\\fcth-backend-revised-TTISD4So\\Scripts\\python.exe",
+    "python.pythonPath": "/Users/renzobeltran/.local/share/virtualenvs/fcth-backend-revised-c9dsj7dK/bin/python",
     "python.linting.pylintEnabled": true,
     "python.linting.enabled": true
 }

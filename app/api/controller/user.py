@@ -1,3 +1,4 @@
+import uuid
 from flask_restplus import Resource
 from app.src.models import db, User
 from app.api.models.user import api, a_auth, a_user, a_user_details
@@ -6,8 +7,9 @@ import jwt
 from datetime import datetime, timedelta
 from os import getenv
 from flask_bcrypt import Bcrypt
-import uuid
+from flask_mail import Message, Mail
 
+mail = Mail()
 secret_key = getenv('SECRET_KEY')
 bcrypt = Bcrypt()
 errors = []
@@ -172,6 +174,9 @@ class UserApi(Resource):
                                         password_hashed=password_hashed)
                         db.session.add(new_user)
                         db.session.commit()
+                        msg = Message("Informing that you have registered to First Choice Travel Hub.",
+                                     recipients=[email])
+                        mail.send(msg)
                         return {'data': {'statusCode': 201,
                                          'message': 'User has been registered'}
                                 }, 201
