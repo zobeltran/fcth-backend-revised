@@ -6,6 +6,8 @@ from app.api.models.payment import api, a_create_stripe_charges, a_stripe_detail
 from app.src.helpers.decorators import referenceNumber, token_required
 import stripe
 from flask import request
+from app.api.controller.user import mail
+from flask_mail import Message
 
 errors = []
 
@@ -48,7 +50,8 @@ class PaymentApi(Resource):
                                         amount=int(amount/100),
                                         currency='php',
                                         description=description)
-            new_payment = Payments(paymentReference='PC' + referenceNumber,
+            payment_reference = PC' + referenceNumber
+            new_payment = Payments(paymentReference=payment_reference,
                                 bookingReference=booking,
                                 paymentFor=paymentFor,
                                 stripeCustomer=customer.id,
@@ -59,16 +62,52 @@ class PaymentApi(Resource):
                 package = PackageBooking.query.filter(PackageBooking.referenceNumber == booking)
                 package.update({PackageBooking.isPaid: True})
                 db.session.commit()
+                msg = Message(subject='Invoice', recipients=email)
+                msg.html = ("Good Day, the message below will serve as your invoice."
+                            "<br>"
+                            "<br>"
+                            "PAYMENT: " + paymentFor +
+                            "<br>"
+                            "PAYMENT REFERENCE NUMBER: " + payment_reference +
+                            "<br>"
+                            "AMOUNT: " + amount +
+                            "<br>"
+                            "DESCRIPTION: " + description)
+                mail.send(msg)
                 return {'message': 'Booking has been successfully charged'}, 200
             elif paymentFor == 'Hotels':
                 hotel = HotelBooking.query.filter(HotelBooking.referenceNumber == booking)
                 hotel.update({HotelBooking.isPaid: True})
                 db.session.commit()
+                msg = Message(subject='Invoice', recipients=email)
+                msg.html = ("Good Day, the message below will serve as your invoice."
+                            "<br>"
+                            "<br>"
+                            "PAYMENT: " + paymentFor +
+                            "<br>"
+                            "PAYMENT REFERENCE NUMBER: " + payment_reference+
+                            "<br>"
+                            "AMOUNT: " + amount +
+                            "<br>"
+                            "DESCRIPTION: " + description)
+                mail.send(msg)
                 return {'message': 'Booking has been successfully charged'}, 200
             elif paymentFor == 'Tickets':
                 ticket = FlightBooking.query.filter(FlightBooking.referenceNumber == booking)
                 ticket.update({FlightBooking.isPaid: True})
                 db.session.commit()
+                msg = Message(subject='Invoice', recipients=email)
+                msg.html = ("Good Day, the message below will serve as your invoice."
+                            "<br>"
+                            "<br>"
+                            "PAYMENT: " + paymentFor +
+                            "<br>"
+                            "PAYMENT REFERENCE NUMBER: " + payment_reference +
+                            "<br>"
+                            "AMOUNT: " + amount +
+                            "<br>"
+                            "DESCRIPTION: " + description)
+                mail.send(msg)
                 return {'message': 'Booking has been successfully charged'}, 200
         except KeyError:
             errors.append('Incomplete JSON nodes')

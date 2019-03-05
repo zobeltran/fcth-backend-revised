@@ -139,9 +139,9 @@ class UserApi(Resource):
                         not password or
                         not email or
                         not role):
-                    if not firstName:
+                    if not first_name:
                         errors.append('First Name must not be null')
-                    if not lastName:
+                    if not last_name:
                         errors.append('Last Name must not be null')
                     if not username:
                         errors.append('Username must not be null')
@@ -174,8 +174,9 @@ class UserApi(Resource):
                                         password_hashed=password_hashed)
                         db.session.add(new_user)
                         db.session.commit()
-                        msg = Message("Informing that you have registered to First Choice Travel Hub.",
-                                     recipients=[email])
+                        msg = Message(subject="First Choice Travel Hub Registration",
+                                      body="Informing that you have registered to First Choice Travel Hub.",
+                                      recipients=[email])
                         mail.send(msg)
                         return {'data': {'statusCode': 201,
                                          'message': 'User has been registered'}

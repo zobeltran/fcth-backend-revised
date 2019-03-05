@@ -20,6 +20,7 @@ mail_server = getenv('MAIL_SERVER')
 mail_port = getenv('MAIL_PORT')
 mail_username = getenv('MAIL_USERNAME')
 mail_password = getenv('MAIL_PASSWORD')
+mail_sender = getenv('MAIL_DEFAULT_SENDER')
 
 # Activate Configurations
 app.config['SECRET_KEY'] = secret_key
@@ -29,6 +30,7 @@ app.config['MAIL_SERVER'] = mail_server
 app.config['MAIL_PORT'] = mail_port
 app.config['MAIL_USERNAME'] = mail_username
 app.config['MAIL_PASSWORD'] = mail_password
+app.config['MAIL_DEFAULT_SENDER'] = mail_sender
 
 # Activate Extensions
 mail.init_app(app)
