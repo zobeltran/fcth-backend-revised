@@ -63,7 +63,7 @@ class PaymentApi(Resource):
                 package.update({PackageBooking.isPaid: True})
                 db.session.commit()
                 msg = Message(subject='Invoice', recipients=[email])
-                msg.html = "Good Day, the message below will serve as your invoice.<br><br>PAYMENT: {} <br>PAYMENT REFERENCE NUMBER: {}<br>AMOUNT: {}<br>DESCRIPTION: {}".format(paymentFor, payment_reference, amount, description)
+                msg.html = "Good Day, the message below will serve as your invoice.<br><br>PAYMENT: {} <br>PAYMENT REFERENCE NUMBER: {}<br>AMOUNT: {}<br>DESCRIPTION: {}".format(paymentFor, payment_reference, int(amount/100), description)
                 mail.send(msg)
                 return {'message': 'Booking has been successfully charged'}, 200
             elif paymentFor == 'Hotels':
@@ -71,7 +71,7 @@ class PaymentApi(Resource):
                 hotel.update({HotelBooking.isPaid: True})
                 db.session.commit()
                 msg = Message(subject='Invoice', recipients=[email])
-                msg.html = "Good Day, the message below will serve as your invoice.<br><br>PAYMENT: {} <br>PAYMENT REFERENCE NUMBER: {}<br>AMOUNT: {}<br>DESCRIPTION: {}".format(paymentFor, payment_reference, amount, description)
+                msg.html = "Good Day, the message below will serve as your invoice.<br><br>PAYMENT: {} <br>PAYMENT REFERENCE NUMBER: {}<br>AMOUNT: {}<br>DESCRIPTION: {}".format(paymentFor, payment_reference, int(amount/100), description)
                 mail.send(msg)
                 return {'message': 'Booking has been successfully charged'}, 200
             elif paymentFor == 'Tickets':
@@ -79,7 +79,7 @@ class PaymentApi(Resource):
                 ticket.update({FlightBooking.isPaid: True})
                 db.session.commit()
                 msg = Message(subject='Invoice', recipients=[email])
-                msg.html = "Good Day, the message below will serve as your invoice.<br><br>PAYMENT: {} <br>PAYMENT REFERENCE NUMBER: {}<br>AMOUNT: {}<br>DESCRIPTION: {}".format(paymentFor, payment_reference, amount, description)
+                msg.html = "Good Day, the message below will serve as your invoice.<br><br>PAYMENT: {} <br>PAYMENT REFERENCE NUMBER: {}<br>AMOUNT: {}<br>DESCRIPTION: {}".format(paymentFor, payment_reference, int(amount/100), description)
                 mail.send(msg)
                 return {'message': 'Booking has been successfully charged'}, 200
         except KeyError:
