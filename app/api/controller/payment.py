@@ -62,7 +62,7 @@ class PaymentApi(Resource):
                 package = PackageBooking.query.filter(PackageBooking.referenceNumber == booking)
                 package.update({PackageBooking.isPaid: True})
                 db.session.commit()
-                msg = Message(subject='Invoice', recipients=email)
+                msg = Message(subject='Invoice', recipients=[email])
                 msg.html = "Good Day, the message below will serve as your invoice.<br><br>PAYMENT: {} <br>PAYMENT REFERENCE NUMBER: {}<br>AMOUNT: {}<br>DESCRIPTION: {}".format(paymentFor, payment_reference, amount, description)
                 mail.send(msg)
                 return {'message': 'Booking has been successfully charged'}, 200
@@ -70,7 +70,7 @@ class PaymentApi(Resource):
                 hotel = HotelBooking.query.filter(HotelBooking.referenceNumber == booking)
                 hotel.update({HotelBooking.isPaid: True})
                 db.session.commit()
-                msg = Message(subject='Invoice', recipients=email)
+                msg = Message(subject='Invoice', recipients=[email])
                 msg.html = "Good Day, the message below will serve as your invoice.<br><br>PAYMENT: {} <br>PAYMENT REFERENCE NUMBER: {}<br>AMOUNT: {}<br>DESCRIPTION: {}".format(paymentFor, payment_reference, amount, description)
                 mail.send(msg)
                 return {'message': 'Booking has been successfully charged'}, 200
@@ -78,7 +78,7 @@ class PaymentApi(Resource):
                 ticket = FlightBooking.query.filter(FlightBooking.referenceNumber == booking)
                 ticket.update({FlightBooking.isPaid: True})
                 db.session.commit()
-                msg = Message(subject='Invoice', recipients=email)
+                msg = Message(subject='Invoice', recipients=[email])
                 msg.html = "Good Day, the message below will serve as your invoice.<br><br>PAYMENT: {} <br>PAYMENT REFERENCE NUMBER: {}<br>AMOUNT: {}<br>DESCRIPTION: {}".format(paymentFor, payment_reference, amount, description)
                 mail.send(msg)
                 return {'message': 'Booking has been successfully charged'}, 200
