@@ -66,13 +66,13 @@ class PaymentApi(Resource):
                 msg.html = ("Good Day, the message below will serve as your invoice."
                             "<br>"
                             "<br>"
-                            "PAYMENT: " + paymentFor +
+                            "PAYMENT: " %s
                             "<br>"
-                            "PAYMENT REFERENCE NUMBER: " + payment_reference +
+                            "PAYMENT REFERENCE NUMBER: " %s
                             "<br>"
-                            "AMOUNT: " + amount +
+                            "AMOUNT: " %s
                             "<br>"
-                            "DESCRIPTION: " + description)
+                            "DESCRIPTION: " %s) % (paymentFor, payment_reference, amount, description)
                 mail.send(msg)
                 return {'message': 'Booking has been successfully charged'}, 200
             elif paymentFor == 'Hotels':
@@ -83,13 +83,13 @@ class PaymentApi(Resource):
                 msg.html = ("Good Day, the message below will serve as your invoice."
                             "<br>"
                             "<br>"
-                            "PAYMENT: " + paymentFor +
+                            "PAYMENT: " %s
                             "<br>"
-                            "PAYMENT REFERENCE NUMBER: " + payment_reference+
+                            "PAYMENT REFERENCE NUMBER: " %s
                             "<br>"
-                            "AMOUNT: " + amount +
+                            "AMOUNT: " %s
                             "<br>"
-                            "DESCRIPTION: " + description)
+                            "DESCRIPTION: " %s) % (paymentFor, payment_reference, amount, description)
                 mail.send(msg)
                 return {'message': 'Booking has been successfully charged'}, 200
             elif paymentFor == 'Tickets':
@@ -100,13 +100,13 @@ class PaymentApi(Resource):
                 msg.html = ("Good Day, the message below will serve as your invoice."
                             "<br>"
                             "<br>"
-                            "PAYMENT: " + paymentFor +
+                            "PAYMENT: " %s
                             "<br>"
-                            "PAYMENT REFERENCE NUMBER: " + payment_reference +
+                            "PAYMENT REFERENCE NUMBER: " %s
                             "<br>"
-                            "AMOUNT: " + amount +
+                            "AMOUNT: " %s
                             "<br>"
-                            "DESCRIPTION: " + description)
+                            "DESCRIPTION: " %s) % (paymentFor, payment_reference, amount, description)
                 mail.send(msg)
                 return {'message': 'Booking has been successfully charged'}, 200
         except KeyError:
