@@ -39,7 +39,7 @@ a_inquiries_flight_details = api.model('Flight Inquiries',
                                        })
 
 a_inquiries_flight_create = api.model('Create Flight Inquiries',
-                                      {'flight': fields.Nested(a_inquiries_flight_basic_details),
+                                      {'flight': fields.Nested(a_inquiries_flight),
                                        'passenger': fields.Nested(a_inquiries_flight_passenger),
                                        'note': fields.String()
                                       })

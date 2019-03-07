@@ -2,7 +2,7 @@ from flask import request
 from flask_restplus import Resource
 from app.src.models import db, User, HotelInquiry, FlightInquiry, User
 from app.src.helpers.decorators import token_required, token_details
-from app.api.models.inquiry import api, a_inquiries_flight_details, a_inquiries_hotel_room_details
+from app.api.models.inquiry import api, a_inquiries_flight_details, a_inquiries_hotel_details
 from app.api.models.inquiry import a_inquiries_hotel_create, a_inquiries_flight_create
 from datetime import datetime
 from dateutil.parser import parse
@@ -78,25 +78,25 @@ class TicketInquiry(Resource):
                     not departure or
                     not origin_date or
                     not departure_date or
-                    not adults or
-                    not child or
-                    not infant or
+                    # not adults or
+                    # not child or
+                    # not infant or
                     not note):
                 if not origin:
                     errors.append('Origin must not be null')
-                elif not departure:
+                if not departure:
                     errors.append('Departure must not be null')
-                elif not origin_date:
+                if not origin_date:
                     errors.append('Origin Date must not be null')
-                elif not departure_date:
+                if not departure_date:
                     errors.append('Departure Date must not be null')
-                elif not adults:
+                if not adults:
                     errors.append('Adult count must not be null')
-                elif not infant:
+                if not infant:
                     errors.append('Infant count must not be null')
-                elif not child:
+                if not child:
                     errors.append('Children count must not be null')
-                elif not note:
+                if not note:
                     errors.append('Note must not be null')
                 return {'errors': {'status': 400,
                                    'errorsCodes': 'E00I2',
@@ -132,11 +132,11 @@ class TicketInquiry(Resource):
 
 @api.route('/hotels')
 @api.response(404, 'Not Found')
-class HotelInquiry(Resource):
+class HotelInquiryApi(Resource):
     @api.doc(security='apiKey', responses={200: 'Success',
                                            400: 'Bad Request'})
     @token_required
-    @api.marshal_list_with(a_inquiries_hotel_room_details)
+    @api.marshal_list_with(a_inquiries_hotel_details, envelope="hotels")
     def get(self):
         hotel_inquiry = HotelInquiry.query.all()
         view_hotel = []
@@ -165,8 +165,9 @@ class HotelInquiry(Resource):
                     'guestNumber': hotel.guest,
                     'note': hotel.note
                 }
-            ),
+            )
         return view_hotel, 200
+
 
     @api.doc(security='apiKey', responses={200: 'Success',
                                            400: 'Bad Request'})
@@ -174,9 +175,9 @@ class HotelInquiry(Resource):
     @api.expect(a_inquiries_hotel_create)
     def post(self):
         errors.clear()
-        data = api.payload()
+        data = api.payload
         token = token_details(request.headers['x-client-token'])
-        user = User.query.filter(User.publicId==token['sub']).first()
+        user = User.query.filter(User.publicId == token['sub']).first()
         try:
             hotel_details = data['hotel']
             location = hotel_details['location']
