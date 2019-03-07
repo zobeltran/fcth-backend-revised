@@ -57,9 +57,17 @@ a_inquiries_hotel_room_details = api.model('Room Details',
                                             'budget': fields.String()
                                            })
 
+a_inquiries_hotel_details = api.model('Create Hotel Inquiries',
+                                      {'id':fields.Integer(),
+                                       'customer': fields.Nested(a_user_details),
+                                       'hotel': fields.Nested(a_inquiries_hotel_room_details),
+                                       'checkDates': fields.Nested(a_inquiries_hotel_dates),
+                                       'guestNumber': fields.Integer(),
+                                       'note': fields.String()
+                                      })
+
 a_inquiries_hotel_create = api.model('Create Hotel Inquiries',
-                                     {'customer': fields.Integer,
-                                      'hotel': fields.Nested(a_inquiries_hotel_room_details),
+                                     {'hotel': fields.Nested(a_inquiries_hotel_room_details),
                                       'checkDates': fields.Nested(a_inquiries_hotel_dates),
                                       'guestNumber': fields.Integer(),
                                       'note': fields.String()
