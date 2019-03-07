@@ -133,7 +133,7 @@ class UserApi(Resource):
             public_id = uuid.uuid4()
             if data:
                 if (not first_name or
-                        not middle_name or
+                        # not middle_name or
                         not last_name or
                         not username or
                         not password or
