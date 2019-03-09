@@ -1,6 +1,6 @@
 from flask import request
 from flask_restplus import Resource
-from app.src.models import db, User, HotelInquiry, FlightInquiry, User
+from app.src.models import db, User, HotelInquiry, FlightInquiry
 from app.src.helpers.decorators import token_required, token_details
 from app.api.models.inquiry import api, a_inquiries_flight_details, a_inquiries_hotel_details
 from app.api.models.inquiry import a_inquiries_hotel_create, a_inquiries_flight_create
