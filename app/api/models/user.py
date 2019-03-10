@@ -34,6 +34,12 @@ a_user = api.model('user',
                     'auth': fields.Nested(a_auth)
                    })
 
+A_USER_EMPLOYEE = api.model('User Employee',
+                            {'name': fields.Nested(a_user_name),
+                             'details': fields.Nested(a_user_details),
+                             'username': fields.String(),
+                             'webUrl': fields.String()})
+
 a_user_details = api.model('users',
                            {'id': fields.Integer(),
                             'name': fields.Nested(a_user_name),
@@ -41,3 +47,6 @@ a_user_details = api.model('users',
                             'details': fields.Nested(a_user_details),
                             'timestamp': fields.Nested(a_user_timestamp)
                            })
+
+A_USER_EMPLOYEE_PASSWORD = api.model('User Password',
+                                     {'password': fields.String()})
