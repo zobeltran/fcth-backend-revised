@@ -2,6 +2,7 @@ import uuid
 from flask_restplus import Resource
 from app.src.models import db, User
 from app.api.models.user import api, a_auth, a_user, a_user_details
+from app.api.models.user import A_USER_EMPLOYEE, A_USER_EMPLOYEE_PASSWORD
 from app.src.helpers.decorators import token_required
 import jwt
 from datetime import datetime, timedelta
@@ -51,6 +52,11 @@ class AuthenticationApi(Resource):
                     checked_hash = bcrypt.check_password_hash(db_password, 
                                                               password)
                     role = user.role
+                    if not user.isAuthenticated:
+                        errors.append('Please verify your account send on your email.')
+                        return {'errors': {'statusCode': 400,
+                                           'errorCode': 'A006',
+                                           'message': errors}}, 400
                     if checked_hash:
                         time = datetime.utcnow() + timedelta(minutes=60)
                         token = jwt.encode({'sub': user.publicId,
@@ -152,8 +158,8 @@ class UserApi(Resource):
                     if not role:
                         errors.append('Role must not be null')
                     return {'errors': {'statusCode': 400,
-                                    'errorCode': 'E0002',
-                                    'message': errors}}, 400
+                                       'errorCode': 'E0002',
+                                       'message': errors}}, 400
                 else:
                     password_bcryt = (bcrypt.generate_password_hash(password))
                     username_unique = (User.query
@@ -162,6 +168,7 @@ class UserApi(Resource):
                     if username_unique:
                         errors.append('Username is already taken')
                         return {'error': {'statusCode': 400,
+                                          'errorCode': 'E00U1',
                                           'message': errors}}, 400
                     else:
                         new_user = User(firstName=first_name,
@@ -171,7 +178,8 @@ class UserApi(Resource):
                                         role=role,
                                         publicId=public_id,
                                         username=username,
-                                        password_hashed=password_hashed)
+                                        password_hashed=password_hashed,
+                                        isAuthenticated=True)
                         db.session.add(new_user)
                         db.session.commit()
                         msg = Message(subject="First Choice Travel Hub Registration",
@@ -179,14 +187,125 @@ class UserApi(Resource):
                                       recipients=[email])
                         mail.send(msg)
                         return {'data': {'statusCode': 201,
-                                         'message': 'User has been registered'}
-                                }, 201
+                                         'message': 'User has been registered'}}, 201
             errors.append('Please fill up the form')
             return {'errors': {'statusCode': 400,
                                'errorCode': 'U0001',
                                'message': errors}}
         except KeyError:
             errors.append('Incomplete json nodes')
+            return {'errors': {'status': 400,
+                               'errorCode': 'E0001',
+                               'message': errors}}, 400
+
+@api.route('/employee')
+class EmployeeUserApi(Resource):
+    @api.doc(security=None, responses={200: 'Success',
+                                       400: 'Bad Request'})
+    @api.expect(A_USER_EMPLOYEE)
+    def post(self):
+        errors.clear()
+        data = api.payload
+        print(data)
+        first_name = data['name']['first']
+        middle_name = data['name']['middle']
+        last_name = data['name']['last']
+        email = data['details']['email']
+        role = data['details']['role']
+        username = data['username']
+        web_url = data['webUrl']
+        public_id = uuid.uuid4()
+        try:
+            if data:
+                if (not first_name or
+                        not last_name or
+                        not username or
+                        not email or
+                        not role):
+                    if not first_name:
+                        errors.append('First Name must not be null')
+                    if not last_name:
+                        errors.append('Last Name must not be null')
+                    if not email:
+                        errors.append('Email must not be null')
+                    if not role:
+                        errors.append('Role must not be null')
+                    if not username:
+                        errors.append('Username must not be null')
+                    return {'errors': {'statusCode': 400,
+                                    'errorCode': 'E0001',
+                                    'message': errors}}, 400
+                else:
+                    username_unique = (User.query
+                                    .filter(User.username == username).all())
+                    email_unique = (User.query
+                                    .filter(User.email == email).all())
+                    if username_unique or email_unique:
+                        if username_unique:
+                            errors.append('Username must be unique')
+                        if email_unique:
+                            errors.append('Email must be unique')
+                        return {'error': {'statusCode': 400,
+                                        'errorCode': 'E00U1',
+                                        'message': errors}}, 400
+                    else:
+                        new_user = User(firstName=first_name,
+                                        middleName=middle_name,
+                                        lastName=last_name,
+                                        email=email,
+                                        role=role,
+                                        publicId=public_id,
+                                        username=username)
+                        db.session.add(new_user)
+                        db.session.flush()
+                        db.session.commit()
+                        msg = Message(subject="First Choice Travel Hub Registration",
+                                      body=("Informing that an admin have registered you to First Choice Travel Hub. "
+                                            "The link below will verify you and allow you to log in. Thank you. "
+                                            "</br>"+ web_url + str(new_user.id)),
+                                      recipients=[email])
+                        mail.send(msg)
+                        return {'data': {'statusCode': 201,
+                                        'message': 'User has been registered'}}, 201
+        except KeyError:
+            errors.append('Incomplete JSON nodes')
+            return {'errors': {'status': 400,
+                               'errorCode': 'E0001',
+                               'message': errors}}, 400
+
+@api.route('/employee=<int:id>')
+@api.response(404, 'Not Found')
+class EmployeeUserIdApi(Resource):
+    @api.doc(security=None, responses={200: 'Success',
+                                       400: 'Bad Request'})
+    @api.expect(A_USER_EMPLOYEE_PASSWORD)
+    def put(self, id):
+        errors.clear()
+        data = api.payload
+        password = data['password']
+        try:
+            if data:
+                if not password:
+                    errors.append('Password must not be null')
+                    return {'errors': {'statusCode': 400,
+                                       'errorCode': 'E0001',
+                                       'message': errors}}, 400
+                else:
+                    user = User.query.get(id)
+                    if user:
+                        password_bcryt = (bcrypt.generate_password_hash(password))
+                        password_hashed = (password_bcryt.decode('utf-8'))
+                        user.isAuthenticated = True
+                        user.password_hashed = password_hashed
+                        db.session.commit()
+                        return {'message': 'Successfully verified'}, 200
+                    else:
+                        errors.append('User does not exist')
+                        return {'errors': {'statusCode': 400,
+                                           'errorCode': 'E00U2',
+                                           'message': errors}}, 400
+        except KeyError:
+            errors.append('Incomplete JSON nodes')
             return {'errors': {'status': 400,
                                'errorCode': 'E0001',
                                'message': errors}}, 400
