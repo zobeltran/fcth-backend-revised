@@ -18,6 +18,7 @@ class User(db.Model):
     dateUpdated = db.Column('DateUpdated', db.DateTime, onupdate=db.func.now(),
                             default=db.func.now())
     isArchived = db.Column('IsArchived', db.Boolean, default=False)
+    isAuthenticated = db.Column('IsAuthenticated', db.Boolean, default=False)
     hotelBooking = db.relationship("HotelBooking", backref='User',
                                    lazy=True)
     flightBooking = db.relationship("FlightBooking", backref='User',
