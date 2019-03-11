@@ -2,5 +2,6 @@
     "python.pythonPath": "/Users/renzobeltran/.local/share/virtualenvs/fcth-backend-revised-c9dsj7dK/bin/python",
     "python.linting.pylintEnabled": true,
     "python.linting.enabled": true,
-    "python.linting.flake8Enabled": false
+    "python.linting.flake8Enabled": false,
+    "python.linting.pylintArgs": ["--load-plugins", "pylint_flask"]
 }

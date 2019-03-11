@@ -77,7 +77,7 @@ class PaymentApi(Resource):
                 msg.html = ("Good Day, the message below will serve as your invoice."
                             "<br><br>PAYMENT: {} "
                             "<br>PAYMENT REFERENCE NUMBER: {}<br>AMOUNT: {}<br>DESCRIPTION: {}"
-                            .format(payment_for, payment_reference, int(amount/100), description))                
+                            .format(payment_for, payment_reference, int(amount/100), description))
                 mail.send(msg)
                 return {'message': 'Booking has been successfully charged'}, 200
             if payment_for == 'Tickets':

@@ -25,12 +25,14 @@ a_package_specification = api.model('Package Specifications',
                                    {'days': fields.String(),
                                     'itinerary': fields.String(),
                                     'inclusions': fields.String(),
-                                    'notes': fields.String()
+                                    'notes': fields.String(),
+                                    'date': fields.Date()
                                     })
 
 a_package_details = api.model('Package Details',
                               {'id': fields.Integer(),
                               'name': fields.String(),
+                              'departureDate': fields.Date(),
                               'details': fields.Nested(a_package_specification),
                               'price': fields.Float(),
                               'ticket': fields.Nested(a_ticket_details),

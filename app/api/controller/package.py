@@ -33,7 +33,8 @@ class PackageApi(Resource):
                         'days': package.days,
                         'itinerary': package.intenerary,
                         'inclusions': package.inclusions,
-                        'notes': package.note
+                        'notes': package.note,
+                        'date': ticket.departureDate
                     },
                     'price': package.price,
                     'ticket': {
