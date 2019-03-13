@@ -290,13 +290,13 @@ class EmployeeUserApi(Resource):
                                'errorCode': 'E0001',
                                'message': errors}}, 400
 
-@api.route('?id=<int:id>')
+@api.route('/id=<int:id>')
 @api.response(404, 'Not Found')
 class EmployeeUserIdApi(Resource):
     @api.doc(security=None, responses={200: 'Success',
                                        400: 'Bad Request'})
     @api.expect(A_USER_EMPLOYEE_PASSWORD)
-    def post(self):
+    def post(self, id):
         errors.clear()
         data = api.payload
         password = data['password']
@@ -326,13 +326,14 @@ class EmployeeUserIdApi(Resource):
             return {'errors': {'status': 400,
                                'errorCode': 'E0001',
                                'message': errors}}, 400
-@api.route('/employee?id=<int:id>')
+
+@api.route('/employee/id=<int:id>')
 @api.response(404, 'Not Found')
 class EmployeeUserUpdateIdApi(Resource):
     @api.doc(security=None, responses={200: 'Success',
                                        400: 'Bad Request'})
     @api.expect(A_USER_EMPLOYEE_PASSWORD)
-    def post(self):
+    def post(self,id):
         errors.clear()
         data = api.payload
         print("fffffffffff")
