@@ -41,7 +41,7 @@ class AuthenticationApi(Resource):
                     return {'errors': {'statusCode': 400,
                                        'errorCode': 'A004',
                                        'message': errors}}, 400
-                if not password: 
+                if not password:
                     errors.append('Password must not be null')
                     return {'errors': {'statusCode': 400,
                                        'errorCode': 'A004',
@@ -49,7 +49,7 @@ class AuthenticationApi(Resource):
                 user = User.query.filter(User.username == username).first()
                 if user:
                     db_password = user.password_hashed
-                    checked_hash = bcrypt.check_password_hash(db_password, 
+                    checked_hash = bcrypt.check_password_hash(db_password,
                                                               password)
                     role = user.role
                     if not user.isAuthenticated:
@@ -260,13 +260,13 @@ class EmployeeUserApi(Resource):
                         db.session.flush()
                         db.session.commit()
                         msg = Message(subject="First Choice Travel Hub Registration",
-                                      body=("Informing that an admin have registered you to First Choice Travel Hub. "
-                                            "The link below will verify you and allow you to log in. Thank you. "
-                                            "</br>"+ web_url + str(new_user.id)),
                                       recipients=[email])
+                        msg.html("Informing that an admin have registered you to First Choice Travel Hub. "
+                                 "The link below will verify you and allow you to log in. Thank you. "
+                                 "</br>"+ web_url + str(new_user.id))
                         mail.send(msg)
                         return {'data': {'statusCode': 201,
-                                        'message': 'User has been registered'}}, 201
+                                         'message': 'User has been registered'}}, 201
         except KeyError:
             errors.append('Incomplete JSON nodes')
             return {'errors': {'status': 400,
