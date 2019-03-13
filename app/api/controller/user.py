@@ -268,15 +268,20 @@ class EmployeeUserApi(Resource):
                         db.session.commit()
                         print("newUrl:", web_url)
                         print("new_userID:", new_user.id)
-                        # newUserID = new_user.id
+                        newUserID = new_user.id
+                        # msg = Message(subject="First Choice Travel Hub Registration",
+                        #             sender="noreply@fcth.com",
+                        #             recipients=email)
                         msg = Message(subject="First Choice Travel Hub Registration",
-                                    sender="noreply@fcth.com",
-                                    recipients=email)
-                        msg.html("Informing that an admin have registered you to First Choice Travel Hub. "
-                                 "The link below will verify you and allow you to log in. Thank you. "
-                                 "</br>"+ web_url + str(new_user.id))
-                        # msg.html = "<p>Informing that an admin have registered you to First Choice Travel Hub.</p>"
+                                      body=("Informing that an admin have registered you to First Choice Travel Hub. "	
+                                            "The link below will verify you and allow you to log in. Thank you. "	
+                                            "</br>"+ web_url + str(new_user.id)),	
+                                      recipients=[email])
                         mail.send(msg)
+                        # msg.html("Informing that an admin have registered you to First Choice Travel Hub. "
+                        #          "The link below will verify you and allow you to log in. Thank you. "
+                        #          "</br> %s%s" % (str(web_url), newUserID))
+                        # msg.html = "<p>Informing that an admin have registered you to First Choice Travel Hub.</p>"
                         return {'data': {'statusCode': 201,
                                          'message': 'User has been registered'}}, 201
         except KeyError:
