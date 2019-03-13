@@ -266,7 +266,7 @@ class EmployeeUserApi(Resource):
                         db.session.add(new_user)
                         db.session.flush()
                         db.session.commit()
-                        print("newUrl": web_url)
+                        print("newUrl:" web_url)
                         print("new_userID:", new_user.id)
                         # newUserID = new_user.id
                         msg = Message(subject="First Choice Travel Hub Registration",
