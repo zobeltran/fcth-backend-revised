@@ -10,7 +10,7 @@ class User(db.Model):
     middleName = db.Column("MiddleName", db.String(50))
     lastName = db.Column("LastName", db.String(50))
     email = db.Column("Email", db.String(100))
-    username = db.Column("Username", db.String(50))
+    # username = db.Column("Username", db.String(50))
     password_hashed = db.Column("Password", db.String(250))
     role = db.Column("Role", db.String(25))
     publicId = db.Column("PublicId", db.String(255))

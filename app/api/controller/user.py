@@ -26,30 +26,32 @@ class AuthenticationApi(Resource):
     def post(self):
         errors.clear()
         data = api.payload
+        print(data)
         try:
-            username = data['username']
+            # username = data['username']
+            email = data['email']
             password = data['password']
             if data:
-                if not username and not password:
-                    errors.append('Username must not be null')
+                if not email and not password:
+                    errors.append('Email must not be null')
                     errors.append('Password must not be null')
                     return {'errors': {'statusCode': 400,
                                        'errorCode': 'A004',
                                        'message': errors}}, 400
-                if not username:
-                    errors.append('Username must not be null')
+                if not email:
+                    errors.append('Email must not be null')
                     return {'errors': {'statusCode': 400,
                                        'errorCode': 'A004',
                                        'message': errors}}, 400
-                if not password:
+                if not password: 
                     errors.append('Password must not be null')
                     return {'errors': {'statusCode': 400,
                                        'errorCode': 'A004',
                                        'message': errors}}, 400
-                user = User.query.filter(User.username == username).first()
+                user = User.query.filter(User.email == email).first()
                 if user:
                     db_password = user.password_hashed
-                    checked_hash = bcrypt.check_password_hash(db_password,
+                    checked_hash = bcrypt.check_password_hash(db_password, 
                                                               password)
                     role = user.role
                     if not user.isAuthenticated:
@@ -63,9 +65,11 @@ class AuthenticationApi(Resource):
                                             'role': user.role,
                                             'exp': time
                                             }, secret_key)
+                        print (user.id)
                         return {'data':
                                     {'token': token.decode('utf-8'),
-                                     'role': role
+                                     'role': role,
+                                     'id': user.id
                                     }}, 200
                     else:
                         errors.append('Password invalid')
@@ -88,7 +92,7 @@ class AuthenticationApi(Resource):
 @api.route('')
 # @cross_origin(allow_headers=['Content-Type'])
 class UserApi(Resource):
-
+    
     @api.doc(security='apiKey', responses={200: 'Success',
                                            401: 'Unauthorized'
                                            })
@@ -182,10 +186,10 @@ class UserApi(Resource):
                                         isAuthenticated=True)
                         db.session.add(new_user)
                         db.session.commit()
-                        msg = Message(subject="First Choice Travel Hub Registration",
-                                      body="Informing that you have registered to First Choice Travel Hub.",
-                                      recipients=[email])
-                        mail.send(msg)
+                        # msg = Message(subject="First Choice Travel Hub Registration",
+                        #               body="Informing that you have registered to First Choice Travel Hub.",
+                        #               recipients=[email])
+                        # mail.send(msg)
                         return {'data': {'statusCode': 201,
                                          'message': 'User has been registered'}}, 201
             errors.append('Please fill up the form')
@@ -212,14 +216,15 @@ class EmployeeUserApi(Resource):
         last_name = data['name']['last']
         email = data['details']['email']
         role = data['details']['role']
-        username = data['username']
+        # username = data['username']
+        password = data['password']
         web_url = data['webUrl']
         public_id = uuid.uuid4()
         try:
             if data:
                 if (not first_name or
                         not last_name or
-                        not username or
+                        # not username or
                         not email or
                         not role):
                     if not first_name:
@@ -230,21 +235,23 @@ class EmployeeUserApi(Resource):
                         errors.append('Email must not be null')
                     if not role:
                         errors.append('Role must not be null')
-                    if not username:
-                        errors.append('Username must not be null')
+                    # if not username:
+                    #     errors.append('Username must not be null')
                     return {'errors': {'statusCode': 400,
                                     'errorCode': 'E0001',
                                     'message': errors}}, 400
                 else:
-                    username_unique = (User.query
-                                    .filter(User.username == username).all())
+                    # username_unique = (User.query
+                    #                 .filter(User.username == username).all())
                     email_unique = (User.query
                                     .filter(User.email == email).all())
-                    if username_unique or email_unique:
-                        if username_unique:
-                            errors.append('Username must be unique')
-                        if email_unique:
-                            errors.append('Email must be unique')
+                    password_bcryt = (bcrypt.generate_password_hash(password))
+                    password_hashed = (password_bcryt.decode('utf-8'))
+                    if email_unique:
+                        # if username_unique:
+                        #     errors.append('Username must be unique')
+                        # if email_unique:
+                        errors.append('Email must be unique')
                         return {'error': {'statusCode': 400,
                                         'errorCode': 'E00U1',
                                         'message': errors}}, 400
@@ -254,17 +261,21 @@ class EmployeeUserApi(Resource):
                                         lastName=last_name,
                                         email=email,
                                         role=role,
-                                        publicId=public_id,
-                                        username=username)
+                                        password_hashed=password_hashed,
+                                        publicId=public_id)
                         db.session.add(new_user)
                         db.session.flush()
                         db.session.commit()
+                        print("new_userID:", new_user.id)
+                        # newUserID = new_user.id
                         msg = Message(subject="First Choice Travel Hub Registration",
-                                      recipients=[email])
-                        msg.html("Informing that an admin have registered you to First Choice Travel Hub. "
-                                 "The link below will verify you and allow you to log in. Thank you. "
-                                 "</br>"+ web_url + str(new_user.id))
-                        mail.send(msg)
+                                    sender="noreply@fcth.com",
+                                    recipients=email)
+                        # msg.html("Informing that an admin have registered you to First Choice Travel Hub. "
+                        #          "The link below will verify you and allow you to log in. Thank you. "
+                        #          "</br>"+ str(web_url) + str(new_user.id))
+                        msg.html = "<p>Informing that an admin have registered you to First Choice Travel Hub.</p>"
+                        #mail.send(msg)
                         return {'data': {'statusCode': 201,
                                          'message': 'User has been registered'}}, 201
         except KeyError:
@@ -273,15 +284,52 @@ class EmployeeUserApi(Resource):
                                'errorCode': 'E0001',
                                'message': errors}}, 400
 
-@api.route('/employee=<int:id>')
+@api.route('?id=<int:id>')
 @api.response(404, 'Not Found')
 class EmployeeUserIdApi(Resource):
     @api.doc(security=None, responses={200: 'Success',
                                        400: 'Bad Request'})
     @api.expect(A_USER_EMPLOYEE_PASSWORD)
-    def put(self, id):
+    def get(self):
         errors.clear()
         data = api.payload
+        password = data['password']
+        try:
+            if data:
+                if not password:
+                    errors.append('Password must not be null')
+                    return {'errors': {'statusCode': 400,
+                                       'errorCode': 'E0001',
+                                       'message': errors}}, 400
+                else:
+                    user = User.query.get(id)
+                    if user:
+                        password_bcryt = (bcrypt.generate_password_hash(password))
+                        password_hashed = (password_bcryt.decode('utf-8'))
+                        user.isAuthenticated = True
+                        user.password_hashed = password_hashed
+                        db.session.commit()
+                        return {'message': 'Successfully verified'}, 200
+                    else:
+                        errors.append('User does not exist')
+                        return {'errors': {'statusCode': 400,
+                                           'errorCode': 'E00U2',
+                                           'message': errors}}, 400
+        except KeyError:
+            errors.append('Incomplete JSON nodes')
+            return {'errors': {'status': 400,
+                               'errorCode': 'E0001',
+                               'message': errors}}, 400
+@api.route('/employee?id=<int:id>')
+@api.response(404, 'Not Found')
+class EmployeeUserUpdateIdApi(Resource):
+    @api.doc(security=None, responses={200: 'Success',
+                                       400: 'Bad Request'})
+    @api.expect(A_USER_EMPLOYEE_PASSWORD)
+    def get(self):
+        errors.clear()
+        data = api.payload
+        print("fffffffffff")
         password = data['password']
         try:
             if data:

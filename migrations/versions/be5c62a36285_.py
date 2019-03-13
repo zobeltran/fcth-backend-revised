@@ -1,8 +1,8 @@
-"""Initial Migration
+"""empty message
 
-Revision ID: cf628738ff0b
+Revision ID: be5c62a36285
 Revises: 
-Create Date: 2019-02-17 20:47:30.429390
+Create Date: 2019-03-13 03:20:02.129837
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'cf628738ff0b'
+revision = 'be5c62a36285'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -24,37 +24,6 @@ def upgrade():
     sa.Column('LastName', sa.String(length=250), nullable=True),
     sa.Column('Email', sa.String(length=100), nullable=True),
     sa.Column('Contact', sa.String(length=50), nullable=True),
-    sa.Column('IsArchived', sa.Boolean(), nullable=True),
-    sa.PrimaryKeyConstraint('Id')
-    )
-    op.create_table('flightinquiries',
-    sa.Column('Id', sa.Integer(), nullable=False),
-    sa.Column('FirstName', sa.String(length=100), nullable=True),
-    sa.Column('lastName', sa.String(length=100), nullable=True),
-    sa.Column('Email', sa.String(length=100), nullable=True),
-    sa.Column('Origin', sa.String(length=100), nullable=True),
-    sa.Column('Arrival', sa.String(length=100), nullable=True),
-    sa.Column('DepartureDate', sa.Date(), nullable=True),
-    sa.Column('ArrivalDate', sa.Date(), nullable=True),
-    sa.Column('DesiredTime', sa.String(length=100), nullable=True),
-    sa.Column('NumberOfAdults', sa.Integer(), nullable=True),
-    sa.Column('NumberOfChild', sa.Integer(), nullable=True),
-    sa.Column('NumberOfInfant', sa.Integer(), nullable=True),
-    sa.Column('Note', sa.String(length=300), nullable=True),
-    sa.Column('IsArchived', sa.Boolean(), nullable=True),
-    sa.PrimaryKeyConstraint('Id')
-    )
-    op.create_table('hotelinquiries',
-    sa.Column('Id', sa.Integer(), nullable=False),
-    sa.Column('FirstName', sa.String(length=100), nullable=True),
-    sa.Column('lastName', sa.String(length=100), nullable=True),
-    sa.Column('Email', sa.String(length=100), nullable=True),
-    sa.Column('Location', sa.String(length=100), nullable=True),
-    sa.Column('Budget', sa.Float(asdecimal=True), nullable=True),
-    sa.Column('Guest', sa.Integer(), nullable=True),
-    sa.Column('checkInDate', sa.Date(), nullable=True),
-    sa.Column('checkOutDate', sa.Date(), nullable=True),
-    sa.Column('Note', sa.String(length=300), nullable=True),
     sa.Column('IsArchived', sa.Boolean(), nullable=True),
     sa.PrimaryKeyConstraint('Id')
     )
@@ -122,6 +91,23 @@ def upgrade():
     sa.Column('DateCreated', sa.DateTime(), nullable=True),
     sa.Column('DateUpdated', sa.DateTime(), nullable=True),
     sa.Column('IsArchived', sa.Boolean(), nullable=True),
+    sa.Column('IsAuthenticated', sa.Boolean(), nullable=True),
+    sa.PrimaryKeyConstraint('Id')
+    )
+    op.create_table('flightinquiries',
+    sa.Column('Id', sa.Integer(), nullable=False),
+    sa.Column('CustomersFk', sa.Integer(), nullable=True),
+    sa.Column('Origin', sa.String(length=100), nullable=True),
+    sa.Column('Arrival', sa.String(length=100), nullable=True),
+    sa.Column('DepartureDate', sa.Date(), nullable=True),
+    sa.Column('ArrivalDate', sa.Date(), nullable=True),
+    sa.Column('DesiredTime', sa.String(length=100), nullable=True),
+    sa.Column('NumberOfAdults', sa.Integer(), nullable=True),
+    sa.Column('NumberOfChild', sa.Integer(), nullable=True),
+    sa.Column('NumberOfInfant', sa.Integer(), nullable=True),
+    sa.Column('Note', sa.String(length=300), nullable=True),
+    sa.Column('IsArchived', sa.Boolean(), nullable=True),
+    sa.ForeignKeyConstraint(['CustomersFk'], ['users.Id'], ),
     sa.PrimaryKeyConstraint('Id')
     )
     op.create_table('hotelbookings',
@@ -130,8 +116,21 @@ def upgrade():
     sa.Column('CustomersFk', sa.Integer(), nullable=True),
     sa.Column('HotelsFk', sa.Integer(), nullable=True),
     sa.Column('IsPaid', sa.Boolean(), nullable=True),
-    sa.ForeignKeyConstraint(['CustomersFk'], ['customers.Id'], ),
+    sa.ForeignKeyConstraint(['CustomersFk'], ['users.Id'], ),
     sa.ForeignKeyConstraint(['HotelsFk'], ['hotels.Id'], ),
+    sa.PrimaryKeyConstraint('Id')
+    )
+    op.create_table('hotelinquiries',
+    sa.Column('Id', sa.Integer(), nullable=False),
+    sa.Column('CustomersFk', sa.Integer(), nullable=True),
+    sa.Column('Location', sa.String(length=100), nullable=True),
+    sa.Column('Budget', sa.Float(asdecimal=True), nullable=True),
+    sa.Column('Guest', sa.Integer(), nullable=True),
+    sa.Column('checkInDate', sa.Date(), nullable=True),
+    sa.Column('checkOutDate', sa.Date(), nullable=True),
+    sa.Column('Note', sa.String(length=300), nullable=True),
+    sa.Column('IsArchived', sa.Boolean(), nullable=True),
+    sa.ForeignKeyConstraint(['CustomersFk'], ['users.Id'], ),
     sa.PrimaryKeyConstraint('Id')
     )
     op.create_table('packages',
@@ -149,6 +148,8 @@ def upgrade():
     sa.Column('IsArchived', sa.Boolean(), nullable=True),
     sa.Column('isExpired', sa.Boolean(), nullable=True),
     sa.Column('IsApproved', sa.Boolean(), nullable=True),
+    sa.Column('DateCreated', sa.DateTime(), nullable=True),
+    sa.Column('DateUpdated', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['FlightFk'], ['tickets.Id'], ),
     sa.ForeignKeyConstraint(['HotelsFk'], ['hotels.Id'], ),
     sa.PrimaryKeyConstraint('Id')
@@ -169,7 +170,7 @@ def upgrade():
     sa.Column('CustomersFk', sa.Integer(), nullable=True),
     sa.Column('FlightFk', sa.Integer(), nullable=True),
     sa.Column('IsPaid', sa.Boolean(), nullable=True),
-    sa.ForeignKeyConstraint(['CustomersFk'], ['customers.Id'], ),
+    sa.ForeignKeyConstraint(['CustomersFk'], ['users.Id'], ),
     sa.ForeignKeyConstraint(['FlightFk'], ['tickets.Id'], ),
     sa.PrimaryKeyConstraint('Id')
     )
@@ -179,7 +180,7 @@ def upgrade():
     sa.Column('CustomersFk', sa.Integer(), nullable=True),
     sa.Column('PackagesFk', sa.Integer(), nullable=True),
     sa.Column('IsPaid', sa.Boolean(), nullable=True),
-    sa.ForeignKeyConstraint(['CustomersFk'], ['customers.Id'], ),
+    sa.ForeignKeyConstraint(['CustomersFk'], ['users.Id'], ),
     sa.ForeignKeyConstraint(['PackagesFk'], ['packages.Id'], ),
     sa.PrimaryKeyConstraint('Id')
     )
@@ -192,13 +193,13 @@ def downgrade():
     op.drop_table('ticketbookings')
     op.drop_table('payments')
     op.drop_table('packages')
+    op.drop_table('hotelinquiries')
     op.drop_table('hotelbookings')
+    op.drop_table('flightinquiries')
     op.drop_table('users')
     op.drop_table('tickets')
     op.drop_table('stripcustomers')
     op.drop_table('logtrails')
     op.drop_table('hotels')
-    op.drop_table('hotelinquiries')
-    op.drop_table('flightinquiries')
     op.drop_table('customers')
     # ### end Alembic commands ###

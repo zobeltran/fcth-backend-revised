@@ -9,12 +9,12 @@ a_user_name = api.model('name',
                         })
 
 a_auth = api.model('auth', 
-                        {'username': fields.String(),
+                        {'email': fields.String(),
                          'password': fields.String()
                         })
 
 a_auth_hashed = api.model('authDetails',
-                         {'username': fields.String(),
+                         {'email': fields.String(),
                           'passwordHashed': fields.String()
                          })
 
@@ -37,7 +37,7 @@ a_user = api.model('user',
 A_USER_EMPLOYEE = api.model('User Employee',
                             {'name': fields.Nested(a_user_name),
                              'details': fields.Nested(a_user_details),
-                             'username': fields.String(),
+                            #  'username': fields.String(),
                              'webUrl': fields.String()})
 
 a_user_details = api.model('users',
