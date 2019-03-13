@@ -217,7 +217,7 @@ class EmployeeUserApi(Resource):
         email = data['details']['email']
         role = data['details']['role']
         # username = data['username']
-        password = data['password']
+        # password = data['password']
         web_url = data['webUrl']
         public_id = uuid.uuid4()
         try:
@@ -245,8 +245,8 @@ class EmployeeUserApi(Resource):
                     #                 .filter(User.username == username).all())
                     email_unique = (User.query
                                     .filter(User.email == email).all())
-                    password_bcryt = (bcrypt.generate_password_hash(password))
-                    password_hashed = (password_bcryt.decode('utf-8'))
+                    # password_bcryt = (bcrypt.generate_password_hash(password))
+                    # password_hashed = (password_bcryt.decode('utf-8'))
                     if email_unique:
                         # if username_unique:
                         #     errors.append('Username must be unique')
@@ -261,7 +261,7 @@ class EmployeeUserApi(Resource):
                                         lastName=last_name,
                                         email=email,
                                         role=role,
-                                        password_hashed=password_hashed,
+                                        # password_hashed=password_hashed,
                                         publicId=public_id)
                         db.session.add(new_user)
                         db.session.flush()
@@ -271,10 +271,10 @@ class EmployeeUserApi(Resource):
                         msg = Message(subject="First Choice Travel Hub Registration",
                                     sender="noreply@fcth.com",
                                     recipients=email)
-                        # msg.html("Informing that an admin have registered you to First Choice Travel Hub. "
-                        #          "The link below will verify you and allow you to log in. Thank you. "
-                        #          "</br>"+ str(web_url) + str(new_user.id))
-                        msg.html = "<p>Informing that an admin have registered you to First Choice Travel Hub.</p>"
+                        msg.html("Informing that an admin have registered you to First Choice Travel Hub. "
+                                 "The link below will verify you and allow you to log in. Thank you. "
+                                 "</br>"+ str(web_url) + str(new_user.id))
+                        # msg.html = "<p>Informing that an admin have registered you to First Choice Travel Hub.</p>"
                         #mail.send(msg)
                         return {'data': {'statusCode': 201,
                                          'message': 'User has been registered'}}, 201
