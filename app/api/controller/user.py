@@ -111,7 +111,7 @@ class UserApi(Resource):
                         'last': user.lastName
                     },
                     'auth': {
-                        'username': user.username,
+                        # 'username': user.username,
                         'passwordHashed': user.password_hashed
                     },
                     'details': {
