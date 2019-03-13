@@ -296,7 +296,7 @@ class EmployeeUserIdApi(Resource):
     @api.doc(security=None, responses={200: 'Success',
                                        400: 'Bad Request'})
     @api.expect(A_USER_EMPLOYEE_PASSWORD)
-    def get(self):
+    def post(self):
         errors.clear()
         data = api.payload
         password = data['password']
@@ -332,7 +332,7 @@ class EmployeeUserUpdateIdApi(Resource):
     @api.doc(security=None, responses={200: 'Success',
                                        400: 'Bad Request'})
     @api.expect(A_USER_EMPLOYEE_PASSWORD)
-    def get(self):
+    def post(self):
         errors.clear()
         data = api.payload
         print("fffffffffff")
