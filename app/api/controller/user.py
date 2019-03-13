@@ -333,7 +333,7 @@ class EmployeeUserUpdateIdApi(Resource):
     @api.doc(security=None, responses={200: 'Success',
                                        400: 'Bad Request'})
     @api.expect(A_USER_EMPLOYEE_PASSWORD)
-    def post(self,id):
+    def put(self, id):
         errors.clear()
         data = api.payload
         print("fffffffffff")
