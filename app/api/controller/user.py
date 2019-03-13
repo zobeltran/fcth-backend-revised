@@ -266,6 +266,7 @@ class EmployeeUserApi(Resource):
                         db.session.add(new_user)
                         db.session.flush()
                         db.session.commit()
+                        print("newUrl": web_url)
                         print("new_userID:", new_user.id)
                         # newUserID = new_user.id
                         msg = Message(subject="First Choice Travel Hub Registration",
@@ -275,7 +276,7 @@ class EmployeeUserApi(Resource):
                                  "The link below will verify you and allow you to log in. Thank you. "
                                  "</br>"+ str(web_url) + str(new_user.id))
                         # msg.html = "<p>Informing that an admin have registered you to First Choice Travel Hub.</p>"
-                        #mail.send(msg)
+                        mail.send(msg)
                         return {'data': {'statusCode': 201,
                                          'message': 'User has been registered'}}, 201
         except KeyError:
