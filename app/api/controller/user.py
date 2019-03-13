@@ -275,7 +275,7 @@ class EmployeeUserApi(Resource):
                         msg = Message(subject="First Choice Travel Hub Registration",
                                       body=("Informing that an admin have registered you to First Choice Travel Hub. "	
                                             "The link below will verify you and allow you to log in. Thank you. "	
-                                            "</br>"+ web_url + str(new_user.id)),	
+                                            + web_url + str(new_user.id)),	
                                       recipients=[email])
                         mail.send(msg)
                         # msg.html("Informing that an admin have registered you to First Choice Travel Hub. "
