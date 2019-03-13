@@ -274,7 +274,7 @@ class EmployeeUserApi(Resource):
                                     recipients=email)
                         msg.html("Informing that an admin have registered you to First Choice Travel Hub. "
                                  "The link below will verify you and allow you to log in. Thank you. "
-                                 "</br>"+ str(web_url) + str(new_user.id))
+                                 "</br>"+ web_url + str(new_user.id))
                         # msg.html = "<p>Informing that an admin have registered you to First Choice Travel Hub.</p>"
                         mail.send(msg)
                         return {'data': {'statusCode': 201,
