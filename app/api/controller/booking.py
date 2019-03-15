@@ -1,5 +1,5 @@
 from flask import request
-from flask_restplus import Resource
+from flask_restplus import Resource, reqparse
 from app.src.models import db, PackageBooking, HotelBooking, FlightBooking
 from app.src.models import User, Ticket, Hotel, Package
 from app.src.helpers.decorators import token_required, token_details, referenceNumber
@@ -77,7 +77,7 @@ class TicketBookingApi(Resource):
                 ticket.remainingSlots = ticket.remainingSlots - 1
                 db.session.add(new_booking)
                 db.session.commit()
-                return {'message': 'You have successfully booked a ticket'}
+                return {'message': 'You have successfully booked a ticket'}, 201
         except KeyError:
             errors.append('Incomplete JSON nodes')
             return {'errors': {'status': 400,
@@ -149,12 +149,28 @@ class HotelBookingApi(Resource):
                 hotel.remainingRooms = hotel.remainingRooms - 1
                 db.session.add(new_booking)
                 db.session.commit()
-                return {'message': 'You have successfully booked a Hotel'}
+                return {'message': 'You have successfully booked a Hotel'}, 201
         except KeyError:
             errors.append('Incomplete JSON nodes')
             return {'errors': {'status': 400,
                                'errorCode': 'E0001',
                                'message': errors}}, 400
+
+    # @api.doc(security='apiKey', responses={201: 'Created',
+    #                                        400: 'Bad Request'})
+    # @token_required
+    # @api.param('id', 'Booking Id', 'query')
+    # def delete(self):
+    #     parser = reqparse.RequestParser()
+    #     parser.add_argument('id', required=True,
+    #                         help="Id must not be null", location='args')
+    #     args = parser.parse_args()
+    #     id = args['id']
+    #     errors.clear()
+    #     packageBooking = PackageBooking.query.get(id)
+    #     if packageBooking:
+    #         packageBooking.customer = null,
+
 
 @api.route('/package')
 @api.response(404, 'Not Found')
@@ -229,6 +245,7 @@ class PackageBookingApi(Resource):
                 package.remainingSlots = package.remainingSlots - 1
                 db.session.add(new_booking)
                 db.session.commit()
+                return {'Package has been booked'}, 201
         except KeyError:
             errors.append('Incomplete JSON nodes')
             return {'errors': {'status': 400,
