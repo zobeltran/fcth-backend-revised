@@ -181,8 +181,8 @@ class PackageBookingApi(Resource):
     @api.marshal_list_with(a_package_booking_details)
     def get(self):
         token = token_details(request.headers['x-client-token'])
-        user = User.query.filter(user.publicId==token['sub']).first()
-        bookings = PackageBooking.query.filter(PackageBooking.customer==user.id).all()
+        user = User.query.filter(User.publicId == token['sub']).first()
+        bookings = PackageBooking.query.filter(PackageBooking.customer == user.id).all()
         view_packages = []
         for booking in bookings:
             package = Package.query.get(booking.package)
