@@ -109,7 +109,7 @@ a_package_details = api.model('Package Details',
 
 a_package_booking_details = api.model('Package Booking Detials',
                                       {'id': fields.Integer(),
-                                       'referenceNumber': fields.Integer(),
+                                       'referenceNumber': fields.String(),
                                        'customer': fields.Nested(a_user_details),
                                        'package': fields.Nested(a_package_details),
                                        'isPaid': fields.Boolean(),
