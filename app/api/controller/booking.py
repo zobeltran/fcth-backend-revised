@@ -245,7 +245,7 @@ class PackageBookingApi(Resource):
                 package.remainingSlots = package.remainingSlots - 1
                 db.session.add(new_booking)
                 db.session.commit()
-                return {'Package has been booked'}, 201
+                return {'message': 'Package has been booked'}, 201
         except KeyError:
             errors.append('Incomplete JSON nodes')
             return {'errors': {'status': 400,
