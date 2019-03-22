@@ -1,9 +1,9 @@
 from flask_restplus import Resource, reqparse
-from app.src.models import db, Package, Hotel, Ticket
+from app.src.models import db, Package, Hotel, Ticket, Itinerary
 from app.api.models.package import api, a_package_details, a_create_package
 from app.api.models.package import a_archive_package, a_approve_package
 from app.api.models.package import a_hotel_details, a_ticket_details
-# from app.api.models.package import A_CREATE_PACKAGE_NEW
+from app.api.models.package import A_CREATE_PACKAGE_NEW, A_PACKAGE
 from app.src.helpers.decorators import token_required
 from datetime import datetime, timedelta
 from dateutil.parser import parse
@@ -420,78 +420,139 @@ class PackageApprovalTicketApi(Resource):
             )
         return view_tickets, 200
 
-    # @token_required
-    # @api.expect(A_CREATE_PACKAGE_NEW)
-    # def post(self):
-    #     errors.clear()
-    #     data = api.payload
-    #     try:
-    #         name = data['name']
-    #         days = int(data['details']['days'])
-    #         itinerary = data['itinerary']
-    #         notes = data['details']['notes']
-    #         price = float(data['price'])
-    #         remaining_slots = int(data['remainingSlots'])
-    #         ticket = int(data['ticket'])
-    #         hotel = int(data['hotel'])
-    #         expiration_date = parse(data['expirationDate'])
-    #         if data:
-    #             if (not name or
-    #                     not days or
-    #                     not itinerary or
-    #                     not notes or
-    #                     not price or
-    #                     not remaining_slots or
-    #                     not ticket or
-    #                     not hotel or
-    #                     not expiration_date):
-    #                 if not name:
-    #                     errors.append('Name must not be null')
-    #                 if not days:
-    #                     errors.append('Days must not be null')
-    #                 if not notes:
-    #                     errors.append('Notes must not be null')
-    #                 if not price:
-    #                     errors.append('Price must not be null')
-    #                 if not remaining_slots:
-    #                     errors.append('Remaining Slots must not be null')
-    #                 if not ticket:
-    #                     errors.append('Ticket must not be null')
-    #                 if not hotel:
-    #                     errors.append('Hotel must not be null')
-    #                 if not expiration_date:
-    #                     errors.append('Expiration Date must not be null')
-    #                 return {'errors': {'status': 400,
-    #                                    'errorCode': 'E0002',
-    #                                    'message': errors}}, 400
-    #             elif (expiration_date <= now or
-    #                     price <= 0 or
-    #                     remaining_slots <= 0):
-    #                 if expiration_date <= now:
-    #                     errors.append('Expiration date must be not be less is equal '
-    #                                   'to today\'s date')
-    #                 if price <= 0:
-    #                     errors.append('Price must be greater than zero')
-    #                 if remaining_slots <= 0:
-    #                     errors.append('Remaining slots must be greater than zero')
-    #                 return {'errors': {'status': 400,
-    #                                    'errorCode': 'E0002',
-    #                                    'message': errors}}, 400
-    #             else:
-    #                 new_package = Package(destination=name,
-    #                                       price=price,
-    #                                       days=days,
-    #                                       intenerary=itinerary,
-    #                                       remainingSlots=remaining_slots,
-    #                                       expirationDate=expiration_date,
-    #                                       note=notes,
-    #                                       hotel=hotel,
-    #                                       flight=ticket)
-    #                 db.session.add(new_package)
-    #                 db.session.commit()
-    #                 return {'message': 'Successfully added new Packaged'}, 201
-    #     except KeyError:
-    #         errors.append('Incomplete JSON nodes')
-    #         return {'errors': {'status': 400,
-    #                            'errorCode': 'E0001',
-    #                            'message': errors}}, 400
+@api.route('/new')
+@api.response(404, 'Not Found')
+class PackagedApi(Resource):
+    @api.doc(security='apiKey', responses={200: 'Success', 400: 'Bad Request'})
+    @token_required
+    @api.expect(A_CREATE_PACKAGE_NEW)
+    def post(self):
+        errors.clear()
+        data = api.payload
+        try:
+            name = data['name']
+            days = int(data['details']['days'])
+            itinerary = data['itinerary']
+            notes = data['details']['notes']
+            price = float(data['price'])
+            remaining_slots = int(data['remainingSlots'])
+            ticket = int(data['ticket'])
+            hotel = int(data['hotel'])
+            expiration_date = parse(data['expirationDate'])
+            if data:
+                if (not name or
+                        not days or
+                        not itinerary or
+                        not notes or
+                        not price or
+                        not remaining_slots or
+                        not ticket or
+                        not hotel or
+                        not expiration_date):
+                    if not name:
+                        errors.append('Name must not be null')
+                    if not days:
+                        errors.append('Days must not be null')
+                    if not notes:
+                        errors.append('Notes must not be null')
+                    if not price:
+                        errors.append('Price must not be null')
+                    if not remaining_slots:
+                        errors.append('Remaining Slots must not be null')
+                    if not ticket:
+                        errors.append('Ticket must not be null')
+                    if not hotel:
+                        errors.append('Hotel must not be null')
+                    if not expiration_date:
+                        errors.append('Expiration Date must not be null')
+                    return {'errors': {'status': 400,
+                                       'errorCode': 'E0002',
+                                       'message': errors}}, 400
+                elif (expiration_date <= now or
+                        price <= 0 or
+                        remaining_slots <= 0):
+                    if expiration_date <= now:
+                        errors.append('Expiration date must be not be less is equal '
+                                      'to today\'s date')
+                    if price <= 0:
+                        errors.append('Price must be greater than zero')
+                    if remaining_slots <= 0:
+                        errors.append('Remaining slots must be greater than zero')
+                    return {'errors': {'status': 400,
+                                       'errorCode': 'E0002',
+                                       'message': errors}}, 400
+                else:
+                    new_package = Package(destination=name,
+                                          price=price,
+                                          days=days,
+                                          remainingSlots=remaining_slots,
+                                          expirationDate=expiration_date,
+                                          note=notes,
+                                          hotel=hotel,
+                                          flight=ticket)
+                    db.session.add(new_package)
+                    db.session.flush()
+                    for itinerary_item in itinerary:
+                        new_itinerary = Itinerary(itinerary=itinerary_item,
+                                                  package=new_package.id)
+                        db.session.add(new_itinerary)
+                    db.session.commit()
+                    return {'message': 'Successfully added new Packaged'}, 201
+        except KeyError:
+            errors.append('Incomplete JSON nodes')
+            return {'errors': {'status': 400,
+                               'errorCode': 'E0001',
+                               'message': errors}}, 400
+
+    @api.doc(security="apiKey", responses={200: 'Success', 400: 'Bad Request'})
+    @token_required
+    @api.marshal_list_with(A_PACKAGE, envelope='packages')
+    def get(self):
+        packages = (Package.query.filter(Package.isArchived.is_(False))
+                    .filter(Package.isExpired.is_(False))
+                    .filter(Package.isApproved.is_(True)).all())
+        view_packages = []
+        view_itinerary = []
+        for package in packages:
+            ticket = Ticket.query.get(package.flight)
+            hotel = Hotel.query.get(package.hotel)
+            itineraries = Itinerary.query.filter(Itinerary.package == package.id).all()
+            view_itinerary.clear()
+            print(itineraries)
+            for itinerary in itineraries:
+                view_itinerary.append(
+                    {
+                        'id': itinerary.id,
+                        'itinerary': itinerary.itinerary
+                    }
+                )
+            view_packages.append(
+                {
+                    'id': package.id,
+                    'name': package.destination,
+                    'details': {
+                        'days': package.days,
+                        'notes': package.note,
+                        'date': ticket.departureDate
+                    },
+                    'departureDate': ticket.departureDate,
+                    'itinerary': view_itinerary,
+                    'price': package.price,
+                    'ticket': {
+                        'id': ticket.id,
+                        'flightNo': ticket.flightNo,
+                        'origin': ticket.origin,
+                        'destination': ticket.arrival
+                    },
+                    'hotel': {
+                        'id': hotel.id,
+                        'name': hotel.name,
+                        'roomType': hotel.roomType,
+                        'capacity': hotel.capacity
+                    },
+                    'remainingSlots': package.remainingSlots,
+                    'expirationDate': package.expirationDate,
+                    'isExpired': package.isExpired
+                }
+            )
+        return view_packages, 200

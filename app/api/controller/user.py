@@ -1,4 +1,5 @@
 import uuid
+from flask import request
 from flask_restplus import Resource
 from app.src.models import db, User
 from app.api.models.user import api, a_auth, a_user, a_user_details
@@ -9,6 +10,7 @@ from datetime import datetime, timedelta
 from os import getenv
 from flask_bcrypt import Bcrypt
 from flask_mail import Message, Mail
+from app.src.helpers.decorators import token_details
 
 mail = Mail()
 secret_key = getenv('SECRET_KEY')
@@ -138,7 +140,7 @@ class UserApi(Resource):
             last_name = data['name']['last']
             email = data['details']['email']
             role = data['details']['role']
-            username = data['auth']['username']
+            username = data['auth']['email']
             password = data['auth']['password']
             public_id = uuid.uuid4()
             if data:
@@ -167,7 +169,7 @@ class UserApi(Resource):
                 else:
                     password_bcryt = (bcrypt.generate_password_hash(password))
                     username_unique = (User.query
-                                       .filter(User.username == username).all())
+                                       .filter(User.email == email).all())
                     password_hashed = (password_bcryt.decode('utf-8'))
                     if username_unique:
                         errors.append('Username is already taken')
@@ -181,7 +183,7 @@ class UserApi(Resource):
                                         email=email,
                                         role=role,
                                         publicId=public_id,
-                                        username=username,
+                                        # username=email,
                                         password_hashed=password_hashed,
                                         isAuthenticated=True)
                         db.session.add(new_user)
@@ -364,3 +366,36 @@ class EmployeeUserUpdateIdApi(Resource):
             return {'errors': {'status': 400,
                                'errorCode': 'E0001',
                                'message': errors}}, 400
+
+@api.route('/profile')
+@api.response(404, 'Not Found')
+class UserProfileApi(Resource):
+    @api.doc(security='apiKey', responses={200: 'Success',
+                                           401: 'Unauthorized'
+                                           })
+    @token_required
+    def get(self):
+        token = token_details(request.headers['x-client-token'])
+        user = User.query.filter(User.publicId==token['sub']).first()
+        view_users = {
+            'id': user.id,
+            'name': {
+                'first': user.firstName,
+                'middle': user.middleName,
+                'last': user.lastName
+            },
+            'auth': {
+                # 'username': user.username,
+                'passwordHashed': user.password_hashed
+            },                 
+            'details': {
+                'email': user.email,
+                'role': user.role
+            },
+            'timestamp': {
+                'dateCreated': user.dateCreated,
+                'dateUpdated': user.dateUpdated
+            }
+        }
+        return api.marshal(view_users, a_user_details,
+                           envelope="user"), 200

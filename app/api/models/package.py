@@ -7,40 +7,38 @@ a_timestamp = api.model('Timestamp',
                          'dateUpdated': fields.DateTime()
                          })
 
-a_ticket_details = api.model('Ticket Package Details', 
-                            {'id': fields.Integer(),
-                             'flightNo': fields.String(),
-                             'origin': fields.String(),
-                             'destination': fields.String()
-                             })
+a_ticket_details = api.model('Ticket Package Details',
+                             {'id': fields.Integer(),
+                              'flightNo': fields.String(),
+                              'origin': fields.String(),
+                              'destination': fields.String()
+                              })
 
 a_hotel_details = api.model('Hotel Pakage Details',
-                           {'id': fields.Integer(),
-                            'name': fields.String(),
-                            'roomType': fields.String(),
-                            'capacity': fields.Integer()
-                            })
+                            {'id': fields.Integer(),
+                             'name': fields.String(),
+                             'roomType': fields.String(),
+                             'capacity': fields.Integer()
+                             })
 
 a_package_specification = api.model('Package Specifications',
-                                   {'days': fields.String(),
-                                    'itinerary': fields.String(),
-                                    'inclusions': fields.String(),
-                                    'notes': fields.String(),
-                                    'date': fields.Date()
-                                    })
+                                    {'days': fields.String(),
+                                     'notes': fields.String(),
+                                     'date': fields.Date()
+                                     })
 
 a_package_details = api.model('Package Details',
                               {'id': fields.Integer(),
-                              'name': fields.String(),
-                              'departureDate': fields.Date(),
-                              'details': fields.Nested(a_package_specification),
-                              'price': fields.Float(),
-                              'ticket': fields.Nested(a_ticket_details),
-                              'hotel': fields.Nested(a_hotel_details),
-                              'remainingSlots': fields.Integer(),
-                              'expirationDate': fields.Date(),
-                              'isExpired': fields.Boolean()
-                              })
+                               'name': fields.String(),
+                               'departureDate': fields.Date(),
+                               'details': fields.Nested(a_package_specification),
+                               'price': fields.Float(),
+                               'ticket': fields.Nested(a_ticket_details),
+                               'hotel': fields.Nested(a_hotel_details),
+                               'remainingSlots': fields.Integer(),
+                               'expirationDate': fields.Date(),
+                               'isExpired': fields.Boolean()
+                               })
 
 a_create_package = api.model('Create Package',
                              {'name': fields.String(),
@@ -57,3 +55,38 @@ a_approve_package = api.model('Approve Package',
 
 a_archive_package = api.model('Archive Package',
                               {'isArchived': fields.Boolean()})
+
+A_PACKAGE_SPECS = api.model('Package Specifications',
+                            {'days': fields.String(),
+                             'notes': fields.String(),
+                             'date': fields.Date()
+                            })
+
+A_ITINERARY = api.model('Itinerary',
+                        {'id': fields.Integer(),
+                         'itinerary': fields.String()})
+
+A_PACKAGE = api.model('Package Details',
+                      {'id': fields.Integer(),
+                       'name': fields.String(),
+                       'departureDate': fields.Date(),
+                       'itinerary': fields.List(fields.Nested(A_ITINERARY)),
+                       'details': fields.Nested(a_package_specification),
+                       'price': fields.Float(),
+                       'ticket': fields.Nested(a_ticket_details),
+                       'hotel': fields.Nested(a_hotel_details),
+                       'remainingSlots': fields.Integer(),
+                       'expirationDate': fields.Date(),
+                       'isExpired': fields.Boolean()
+                      })
+
+A_CREATE_PACKAGE_NEW = api.model('Create Package',
+                                 {'name': fields.String(),
+                                  'details': fields.Nested(A_PACKAGE_SPECS),
+                                  'itinerary':fields.List(fields.String(), description='itinerary'),
+                                  'price': fields.Float(),
+                                  'ticket': fields.Integer(),
+                                  'hotel': fields.Integer(),
+                                  'remainingSlots': fields.Integer(),
+                                  'expirationDate': fields.Date()
+                                 })

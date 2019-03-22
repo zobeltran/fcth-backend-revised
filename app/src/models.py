@@ -173,6 +173,8 @@ class Package(db.Model):
                             default=db.func.now())
     packageBooking = db.relationship("PackageBooking", backref='Package',
                                      lazy=True)
+    itineraryList = db.relationship("Itinerary", backref='Package',
+                                    lazy=True)
 
     __tablename__ = 'packages'
 
@@ -236,3 +238,11 @@ class Payments(db.Model):
     stripeChargeId = db.Column("StripChargeId", db.String(50))
 
     __tablename__ = "payments"
+
+# Itinerary
+class Itinerary(db.Model):
+    id = db.Column("Id", db.Integer, primary_key=True)
+    itinerary = db.Column("Itinerary", db.String(255))
+    package = db.Column("PackageFk", db.ForeignKey('packages.Id'))
+
+    __tablename__ = "itinerary"
