@@ -3,5 +3,5 @@
     "python.linting.pylintEnabled": true,
     "python.linting.enabled": true,
     "python.linting.flake8Enabled": false,
-    "python.linting.pylintArgs": ["--load-plugins", "pylint_flask"]
+    "python.linting.pylintArgs": ["--load-plugins","pylint_flask", "--disable", "E1101"]
 }
