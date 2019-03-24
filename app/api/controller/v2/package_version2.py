@@ -64,7 +64,7 @@ class PackagedApi(Resource):
                         ERRORS.append('Hotel must not be null')
                     if not expiration_date:
                         ERRORS.append('Expiration Date must not be null')
-                    return {'ERRORS': {'status': 400,
+                    return {'errors': {'status': 400,
                                        'errorCode': 'E0002',
                                        'message': ERRORS}}, 400
                 elif (expiration_date <= NOW or
@@ -92,14 +92,14 @@ class PackagedApi(Resource):
                     db.session.add(new_package)
                     db.session.flush()
                     for itinerary_item in itinerary:
-                        new_itinerary = Itinerary(itinerary=itinerary_item,
+                        new_itinerary = Itinerary(itinerary=itinerary_item['value'],
                                                   package=new_package.id)
                         db.session.add(new_itinerary)
                     db.session.commit()
                     return {'message': 'Successfully added new Packaged'}, 201
         except KeyError:
             ERRORS.append('Incomplete JSON nodes')
-            return {'ERRORS': {'status': 400,
+            return {'errors': {'status': 400,
                                'errorCode': 'E0001',
                                'message': ERRORS}}, 400
 
