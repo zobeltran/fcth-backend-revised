@@ -40,7 +40,6 @@ A_PACKAGE_PRICES = API.model('Package Prices',
 A_PACKAGE_SPECS = API.model('Package Specifications',
                             {'days': fields.String(),
                              'notes': fields.String(),
-                             'date': fields.Date()
                             })
 
 A_ITINERARY = API.model('Itinerary',
