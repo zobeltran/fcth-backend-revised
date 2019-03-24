@@ -5,6 +5,7 @@ from flask_cors import CORS
 from app.src.models import db
 from app.api.controller.user import bcrypt
 from app.src.routes.api_v1 import api_routes as api_v1_routes
+from app.src.routes.api_v2 import API_ROUTES_V2 as api_v2_routes
 from flask_mail import Mail
 from app.api.controller.user import mail
 
@@ -41,6 +42,7 @@ cors = CORS(app, allow_headers='*', expose_headers='*')
 
 # Main Routes
 app.register_blueprint(api_v1_routes)
+app.register_blueprint(api_v2_routes)
 
 @app.route('/')
 def index():
@@ -48,6 +50,10 @@ def index():
 
 @app.route('/api/v1/documentation')
 def documentation_version1():
+    pass
+
+@app.route('/api/v2/documentation')
+def documentation_v2():
     pass
 
 if __name__ == '__main__':
