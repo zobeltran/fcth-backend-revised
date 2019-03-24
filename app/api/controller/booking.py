@@ -156,22 +156,6 @@ class HotelBookingApi(Resource):
                                'errorCode': 'E0001',
                                'message': errors}}, 400
 
-    # @api.doc(security='apiKey', responses={201: 'Created',
-    #                                        400: 'Bad Request'})
-    # @token_required
-    # @api.param('id', 'Booking Id', 'query')
-    # def delete(self):
-    #     parser = reqparse.RequestParser()
-    #     parser.add_argument('id', required=True,
-    #                         help="Id must not be null", location='args')
-    #     args = parser.parse_args()
-    #     id = args['id']
-    #     errors.clear()
-    #     packageBooking = PackageBooking.query.get(id)
-    #     if packageBooking:
-    #         packageBooking.customer = null,
-
-
 @api.route('/package')
 @api.response(404, 'Not Found')
 class PackageBookingApi(Resource):
