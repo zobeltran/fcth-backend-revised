@@ -14,6 +14,20 @@ ERRORS = []
 NOW = datetime.now()
 
 
+def itirate(items):
+    view_items = []
+    if len(items) == 1:
+        None
+    for item in items:
+        view_items.append(
+            {
+                'id': item.id,
+                'itinerary': item.itinerary
+            }
+        )
+    return view_items
+
+
 @API.route('')
 @API.response(404, 'Not Found')
 class PackagedApi(Resource):
@@ -121,13 +135,15 @@ class PackagedApi(Resource):
         view_packages = []
         view_itinerary = []
         for package in packages:
+            print(package.id)
             ticket = Ticket.query.get(package.flight)
             hotel = Hotel.query.get(package.hotel)
             itineraries = Itinerary.query.filter(Itinerary.package == package.id).all()
-            view_itinerary.clear()
+            # view_itinerary.clear()
             service_charge = (float(ticket.price) + float(hotel.price))*.02
             vat = float(service_charge) * .12
             for itinerary in itineraries:
+                print(itinerary)
                 view_itinerary.append(
                     {
                         'id': itinerary.id,
@@ -144,7 +160,7 @@ class PackagedApi(Resource):
                         'date': ticket.departureDate
                     },
                     'departureDate': ticket.departureDate,
-                    'itinerary': view_itinerary,
+                    'itinerary': itirate(itineraries),
                     'price': {
                         'ticket': ticket.price,
                         'hotel': hotel.price,
@@ -207,7 +223,7 @@ class PackageBookingApiId(Resource):
                         'date': ticket.departureDate
                     },
                     'departureDate': ticket.departureDate,
-                    'itinerary': view_itinerary,
+                    'itinerary': itirate(itineraries),
                     'price': {
                         'ticket': ticket.price,
                         'hotel': hotel.price,
