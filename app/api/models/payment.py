@@ -18,3 +18,16 @@ a_create_stripe_charges = api.model('Create Charges',
                                      'description': fields.String(),
                                      'paymentFor': fields.String()
                                      })
+
+a_pay_via_bank = api.model('Pay Via Bank',
+                           {
+                            'referenceNumber': fields.String(),
+                            'email': fields.String(),
+                            'paymentFor': fields.String(),
+                            'amount': fields.String()
+                            })
+
+a_payment_confirmation = api.model('Confirm Pay Via Bank',
+                                   {
+                                    'isPaid': fields.Boolean()
+                                   })

@@ -189,6 +189,7 @@ class PackageBooking(db.Model):
     customer = db.Column('CustomersFk', db.Integer,
                          db.ForeignKey('users.Id'))
     package = db.Column('PackagesFk', db.Integer, db.ForeignKey('packages.Id'))
+    paymentMethod = db.Column('PaymentMethod', db.Integer)
     isPaid = db.Column('IsPaid', db.Boolean, default=False)
 
     __tablename__ = 'packagebookings'
@@ -201,6 +202,7 @@ class HotelBooking(db.Model):
     customer = db.Column('CustomersFk', db.Integer,
                          db.ForeignKey('users.Id'))
     hotel = db.Column('HotelsFk', db.Integer, db.ForeignKey('hotels.Id'))
+    paymentMethod = db.Column('PaymentMethod', db.Integer)
     isPaid = db.Column('IsPaid', db.Boolean, default=False)
 
     __tablename__ = 'hotelbookings'
@@ -213,6 +215,7 @@ class FlightBooking(db.Model):
     customer = db.Column('CustomersFk', db.Integer,
                          db.ForeignKey('users.Id'))
     flight = db.Column('FlightFk', db.Integer, db.ForeignKey('tickets.Id'))
+    paymentMethod = db.Column('PaymentMethod', db.Integer)
     isPaid = db.Column('IsPaid', db.Boolean, default=False)
 
     __tablename__ = 'ticketbookings'
@@ -233,6 +236,7 @@ class Payments(db.Model):
     paymentReference = db.Column("PaymentReference", db.String(50))
     bookingReference = db.Column("BookingReference", db.String(50))
     paymentFor = db.Column("PaymentFor", db.String(50))
+    paymentMethod = db.Column("PaymentMethod", db.String(50))
     stripeCustomer = db.Column("StripeCustomer",
                                db.ForeignKey('stripcustomers.Id'))
     stripeChargeId = db.Column("StripChargeId", db.String(50))

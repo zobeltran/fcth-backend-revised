@@ -208,5 +208,8 @@ pip-selfcheck.json
 !.vscode/launch.json
 !.vscode/extensions.json
 
+# Custom
+.DS_Store
+
 
 # End of https://www.gitignore.io/api/node,python,visualstudiocode

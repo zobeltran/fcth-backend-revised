@@ -2,12 +2,13 @@
 """
 Package API version 2
 """
+from flask import request
 from datetime import datetime
 from dateutil.parser import parse
 from flask_restplus import Resource
-from app.src.models import db, Package, Hotel, Ticket, Itinerary
+from app.src.models import db, Package, Hotel, Ticket, Itinerary, User, PackageBooking
 from app.api.models.v2.package_version2 import API, A_CREATE_PACKAGE_NEW, A_PACKAGE
-from app.src.helpers.decorators import token_required
+from app.src.helpers.decorators import token_required, token_details
 
 ERRORS = []
 NOW = datetime.now()
@@ -120,6 +121,69 @@ class PackagedApi(Resource):
         view_packages = []
         view_itinerary = []
         for package in packages:
+            ticket = Ticket.query.get(package.flight)
+            hotel = Hotel.query.get(package.hotel)
+            itineraries = Itinerary.query.filter(Itinerary.package == package.id).all()
+            view_itinerary.clear()
+            service_charge = (float(ticket.price) + float(hotel.price))*.02
+            vat = float(service_charge) * .12
+            for itinerary in itineraries:
+                view_itinerary.append(
+                    {
+                        'id': itinerary.id,
+                        'itinerary': itinerary.itinerary
+                    }
+                )
+            view_packages.append(
+                {
+                    'id': package.id,
+                    'name': package.destination,
+                    'details': {
+                        'days': package.days,
+                        'notes': package.note,
+                        'date': ticket.departureDate
+                    },
+                    'departureDate': ticket.departureDate,
+                    'itinerary': view_itinerary,
+                    'price': {
+                        'ticket': ticket.price,
+                        'hotel': hotel.price,
+                        'serviceCharge': service_charge,
+                        'vat': vat
+                    },
+                    'ticket': {
+                        'id': ticket.id,
+                        'flightNo': ticket.flightNo,
+                        'origin': ticket.origin,
+                        'destination': ticket.arrival
+                    },
+                    'hotel': {
+                        'id': hotel.id,
+                        'name': hotel.name,
+                        'roomType': hotel.roomType,
+                        'capacity': hotel.capacity
+                    },
+                    'remainingSlots': package.remainingSlots,
+                    'expirationDate': package.expirationDate,
+                    'isExpired': package.isExpired
+                }
+            )
+        return view_packages, 200
+
+@API.route('/booking')
+@API.response(404, 'Not Found')
+class PackageBookingApiId(Resource):
+    @API.doc(security="apiKey", responses={200: 'Success', 400: 'Bad Request'})
+    @token_required
+    @API.marshal_list_with(A_PACKAGE, envelope='packages')
+    def get(self):
+        token = token_details(request.headers['x-client-token'])
+        user = User.query.filter(User.publicId == token['sub']).first()
+        bookings = PackageBooking.query.filter(PackageBooking.customer == user.id).all()
+        view_packages = []
+        view_itinerary = []
+        for bookings in bookings:
+            package = Package.query.get(bookings.package)
             ticket = Ticket.query.get(package.flight)
             hotel = Hotel.query.get(package.hotel)
             itineraries = Itinerary.query.filter(Itinerary.package == package.id).all()
