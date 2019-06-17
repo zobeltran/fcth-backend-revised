@@ -28,6 +28,14 @@ class User(db.Model):
 
     __tablename__ = 'users'
 
+# Invitations
+class Invitations( db.Model ):
+    id = db.Column( 'Id', db.Integer, primary_key=True )
+    customer = db.Column('CustomersFk', db.Integer,
+                         db.ForeignKey('users.Id'))
+    email = db.Column( 'Email', db.String( 100 ) )
+
+    __tablename__ = 'invitations'
 
 # Log In Trail
 class LogTrail(db.Model):
@@ -91,7 +99,7 @@ class Hotel(db.Model):
     isApproved = db.Column('IsApproved', db.Boolean, default=False)
     hotelBooking = db.relationship("HotelBooking", backref='Hotel',
                                    lazy=True)
-    packageHotel = db.relationship('Package', backref='Hotels', lazy=True)
+    packageHotel = db.relationship('Package', backref='Hotel', lazy=True)
 
     __tablename__ = "hotels"
 
