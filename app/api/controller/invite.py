@@ -52,7 +52,7 @@ class InviteApi(Resource):
                 html=
                 	"This is an email informing that user " + user.lastName + ", " + user.firstName + " " + user.middleName + "( " + user.email + " ) has invited you to register to First Choice Travel Hub.\n" +
                     "The link below will allow you to sign up. Thank you.\n" +
-                    "<a href='localhost:8080/register'>Click Here</a>",	
+                    "<br><a href='localhost:8080/register'>localhost:8080/register</a>",	
                 recipients=[email]
             )
 			mail.send(msg)
@@ -126,7 +126,7 @@ class SuggestApi(Resource):
             	"This is an email informing that user " + user.lastName + ", " + user.firstName + " " + user.middleName + "( " + user.email + " ) has suggested a package for you at First Choice Travel Hub.\n\n" +
             	pkg_msg + "\n\n" +
                 "The link below will allow you to book this. Thank you.\n" +
-                "<a href='localhost:8080/register'>Click Here</a>",	
+                "<br><a href='localhost:8080/register'>localhost:8080/register</a>",	
             recipients=[email]
         )
 		mail.send(msg)
