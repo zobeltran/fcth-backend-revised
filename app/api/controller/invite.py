@@ -122,11 +122,11 @@ class SuggestApi(Resource):
 		print( pkg_msg )
 		msg = Message(
 			subject="First Choice Travel Hub Package Suggestion",
-            body=
+            html=
             	"This is an email informing that user " + user.lastName + ", " + user.firstName + " " + user.middleName + "( " + user.email + " ) has suggested a package for you at First Choice Travel Hub.\n\n" +
             	pkg_msg + "\n\n" +
                 "The link below will allow you to book this. Thank you.\n" +
-                "[ link here ]",	
+                "<a href='localhost:8080/register'>Click Here</a>",	
             recipients=[email]
         )
 		mail.send(msg)
