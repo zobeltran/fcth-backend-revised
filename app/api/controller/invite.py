@@ -49,10 +49,10 @@ class InviteApi(Resource):
 			db.session.commit()
 			msg = Message(
 				subject="First Choice Travel Hub Registration Invitation",
-                html=
+                body=
                 	"This is an email informing that user " + user.lastName + ", " + user.firstName + " " + user.middleName + "( " + user.email + " ) has invited you to register to First Choice Travel Hub.\n" +
                     "The link below will allow you to sign up. Thank you.\n" +
-                    "<br><a href='localhost:8080/register'>localhost:8080/register</a>",	
+                    "localhost:8080/register",	
                 recipients=[email]
             )
 			mail.send(msg)
@@ -122,11 +122,11 @@ class SuggestApi(Resource):
 		print( pkg_msg )
 		msg = Message(
 			subject="First Choice Travel Hub Package Suggestion",
-            html=
+            body=
             	"This is an email informing that user " + user.lastName + ", " + user.firstName + " " + user.middleName + "( " + user.email + " ) has suggested a package for you at First Choice Travel Hub.\n\n" +
             	pkg_msg + "\n\n" +
                 "The link below will allow you to book this. Thank you.\n" +
-                "<br><a href='localhost:8080/register'>localhost:8080/register</a>",	
+                "localhost:8080/register",	
             recipients=[email]
         )
 		mail.send(msg)
