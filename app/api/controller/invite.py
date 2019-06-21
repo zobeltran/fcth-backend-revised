@@ -49,10 +49,10 @@ class InviteApi(Resource):
 			db.session.commit()
 			msg = Message(
 				subject="First Choice Travel Hub Registration Invitation",
-                body=
+                html=
                 	"This is an email informing that user " + user.lastName + ", " + user.firstName + " " + user.middleName + "( " + user.email + " ) has invited you to register to First Choice Travel Hub.\n" +
                     "The link below will allow you to sign up. Thank you.\n" +
-                    "[ link here ]",	
+                    "<a href='localhost:8080/register'>Click Here</a>",	
                 recipients=[email]
             )
 			mail.send(msg)
