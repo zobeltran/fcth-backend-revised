@@ -1,22 +1,25 @@
 import stripe
-# from flask import request
+import os
+from flask import request, Flask
 from flask_restplus import Resource, reqparse
 from flask_mail import Message
-from app.src.models import db, Payments, Hotel, Ticket, Package
+import app
+from app.src.models import db, Payments, Hotel, Ticket, Package, User, Itinerary
 from app.src.models import FlightBooking, HotelBooking, PackageBooking
 from app.src.models import StripeCustomer
 from app.api.models.payment import api, a_create_stripe_charges, a_stripe_details
 from app.api.models.payment import a_pay_via_bank, a_payment_confirmation
-from app.src.helpers.decorators import referenceNumber, token_required
+from app.src.helpers.decorators import referenceNumber, token_required, token_details
 from app.api.controller.user import mail
+from xhtml2pdf import pisa
 
+app = Flask( __name__ )
 errors = []
 
 pubkey = 'pk_test_GjK3GmJJ1exs60wIcgTpfggq'
 secretkey = 'sk_test_RXyvP1FBgkRyCwyEBGyZeymo'
 
 stripe.api_key = secretkey
-
 @api.route('')
 @api.response(404, 'Not Found')
 class PaymentApi(Resource):
@@ -102,7 +105,7 @@ class PaymentApi(Resource):
                                'errorCode': 'E0001',
                                'message': errors}}, 400
 
-@api.route('bank')
+@api.route('/bank')
 @api.response(404, 'Not Found')
 class PaymentViaBankApi(Resource):
     @api.doc(security='apiKey', responses={200: 'Success',
@@ -113,12 +116,31 @@ class PaymentViaBankApi(Resource):
     def post(self):
         errors.clear()
         data = api.payload
+        token = token_details(request.headers['x-client-token'])
+        user = User.query.filter(User.publicId==token['sub']).first()
         try:
-            booking = data['referenceNumber']
-            email = data['email']
+            id = data[ 'id' ]
+            print( "ID SUBMITTED:", id )
+            pkg = (
+                PackageBooking.query.filter( PackageBooking.id == id )
+                    .join( Package, PackageBooking.package == Package.id )
+                    .join( Ticket, Package.flight == Ticket.id )
+                    .join( Hotel, Package.hotel == Hotel.id )
+            ).first()
+
+            print( "DIR:", dir( pkg.Package ) )
+            ticket_price = float( pkg.Package.Tickets.price )
+            hotel_price = float( pkg.Package.Hotel.price )
+            service_charge = ( ticket_price + ticket_price )*.02
+            vat = float(service_charge) * .12
+            total = ticket_price + hotel_price + service_charge + vat
+
+            booking = pkg.referenceNumber
+            email = user.email
             payment_for = data['paymentFor']
-            amount = data['amount']
+            amount = total
             payment_reference = 'PB' + referenceNumber
+            print( "No ERROR" )
             new_payment = Payments(paymentReference=payment_reference,
                                    bookingsReference=booking,
                                    paymentFor=payment_for,
@@ -132,12 +154,21 @@ class PaymentViaBankApi(Resource):
                 package.update({PackageBooking.paymentMethod: "BANK"})
                 db.session.commit()
                 msg = Message(subject='Pay Via Bank Details', recipients=[email])
-                msg.html = ("Good Day, the message below will serve as your Payment Via Bank Details."
-                            "<br><br>PAYMENT REFERENCE NUMBER: {}<br>AMOUNT: {}"
-                            "<br><br>Deposit in Saving Account (BDO)"
-                            "<br>Account Number: 123-123123-123"
-                            "<br>Account Name: First Choice Travel Hub"
-                            .format(payment_reference, int(amount/100)))
+                template = (
+                    "<br><br>PAYMENT REFERENCE NUMBER: " + payment_reference + "<br>AMOUNT: " + str( int( amount ) ) +
+                    "<br><br>Deposit in Saving Account (BDO)" +
+                    "<br>Account Number: 123-123123-123" +
+                    "<br>Account Name: First Choice Travel Hub" +
+                    "<br>Email: renzo.beltran@via-appia.ph"
+                )
+                filedest = "app/api/controller/pdfs/invoice.pdf"
+                resultFile = open( filedest, "w+b" )
+                status = pisa.CreatePDF( template, dest=resultFile )
+                resultFile.close()
+                fp = app.open_resource( "pdfs/invoice.pdf" )
+                msg.attach( "invoice.pdf", "application/pdf", fp.read() )
+                msg.html = ("Good Day, attached file will serve as your Payment Via Bank Invoice."
+                            )
                 mail.send(msg)
                 return {'message': 'Booking has been set to pending'}, 200
             if payment_for == 'Hotels':

@@ -2,10 +2,10 @@
 """
 Package API version 2
 """
-from flask import request
+from flask import request, render_template
 from datetime import datetime
 from dateutil.parser import parse
-from flask_restplus import Resource
+from flask_restplus import Resource, reqparse
 from app.src.models import db, Package, Hotel, Ticket, Itinerary, User, PackageBooking
 from app.api.models.v2.package_version2 import API, A_CREATE_PACKAGE_NEW, A_PACKAGE
 from app.src.helpers.decorators import token_required, token_details
@@ -13,13 +13,12 @@ from app.src.helpers.decorators import token_required, token_details
 ERRORS = []
 NOW = datetime.now()
 
-
 def itirate(items):
     view_items = []
     if len(items) == 1:
         None
     for item in items:
-        view_items.append(
+        view_items.append( 
             {
                 'id': item.id,
                 'itinerary': item.itinerary
@@ -128,63 +127,118 @@ class PackagedApi(Resource):
 
         :rtype: list
         """
+        pid = request.args.get( "package" )
 
-        packages = (Package.query.filter(Package.isArchived.is_(False))
-                    .filter(Package.isExpired.is_(False))
-                    .filter(Package.isApproved.is_(True)).all())
-        view_packages = []
-        view_itinerary = []
-        for package in packages:
-            print(package.id)
-            ticket = Ticket.query.get(package.flight)
-            hotel = Hotel.query.get(package.hotel)
-            itineraries = Itinerary.query.filter(Itinerary.package == package.id).all()
-            # view_itinerary.clear()
-            service_charge = (float(ticket.price) + float(hotel.price))*.02
-            vat = float(service_charge) * .12
-            for itinerary in itineraries:
-                print(itinerary)
-                view_itinerary.append(
+        if not pid:
+            packages = (Package.query.filter(Package.isArchived.is_(False))
+                        .filter(Package.isExpired.is_(False))
+                        .filter(Package.isApproved.is_(True)).all())
+            view_packages = []
+            view_itinerary = []
+            for package in packages:
+                print(package.id)
+                ticket = Ticket.query.get(package.flight)
+                hotel = Hotel.query.get(package.hotel)
+                itineraries = Itinerary.query.filter(Itinerary.package == package.id).all()
+                # view_itinerary.clear()
+                service_charge = (float(ticket.price) + float(hotel.price))*.02
+                vat = float(service_charge) * .12
+                for itinerary in itineraries:
+                    print(itinerary)
+                    view_itinerary.append(
+                        {
+                            'id': itinerary.id,
+                            'itinerary': itinerary.itinerary
+                        }
+                    )
+                view_packages.append(
                     {
-                        'id': itinerary.id,
-                        'itinerary': itinerary.itinerary
+                        'id': package.id,
+                        'name': package.destination,
+                        'details': {
+                            'days': package.days,
+                            'notes': package.note,
+                            'date': ticket.departureDate
+                        },
+                        'departureDate': ticket.departureDate,
+                        'itinerary': itirate(itineraries),
+                        'price': {
+                            'ticket': ticket.price,
+                            'hotel': hotel.price,
+                            'serviceCharge': service_charge,
+                            'vat': vat
+                        },
+                        'ticket': {
+                            'id': ticket.id,
+                            'flightNo': ticket.flightNo,
+                            'origin': ticket.origin,
+                            'destination': ticket.arrival
+                        },
+                        'hotel': {
+                            'id': hotel.id,
+                            'name': hotel.name,
+                            'roomType': hotel.roomType,
+                            'capacity': hotel.capacity
+                        },
+                        'remainingSlots': package.remainingSlots,
+                        'expirationDate': package.expirationDate,
+                        'isExpired': package.isExpired
                     }
                 )
-            view_packages.append(
-                {
-                    'id': package.id,
-                    'name': package.destination,
-                    'details': {
-                        'days': package.days,
-                        'notes': package.note,
-                        'date': ticket.departureDate
-                    },
-                    'departureDate': ticket.departureDate,
-                    'itinerary': itirate(itineraries),
-                    'price': {
-                        'ticket': ticket.price,
-                        'hotel': hotel.price,
-                        'serviceCharge': service_charge,
-                        'vat': vat
-                    },
-                    'ticket': {
-                        'id': ticket.id,
-                        'flightNo': ticket.flightNo,
-                        'origin': ticket.origin,
-                        'destination': ticket.arrival
-                    },
-                    'hotel': {
-                        'id': hotel.id,
-                        'name': hotel.name,
-                        'roomType': hotel.roomType,
-                        'capacity': hotel.capacity
-                    },
-                    'remainingSlots': package.remainingSlots,
-                    'expirationDate': package.expirationDate,
-                    'isExpired': package.isExpired
-                }
-            )
-        return view_packages, 200
+
+            return view_packages, 200
+        else:
+            package = (
+                Package.query.filter( Package.id == pid )                    
+                    .join( Ticket, Package.flight == Ticket.id )
+                    .join( Hotel, Package.hotel == Hotel.id )
+            ).all()
+
+            itineraryList = (
+                Itinerary.query.filter( Itinerary.package == pid )
+            ).all()
+
+            pkg = package[0]
+            ticket_price = float( pkg.Tickets.price )
+            hotel_price = float( pkg.Hotel.price )
+            service_charge = ( ticket_price + ticket_price )*.02
+            vat = float(service_charge) * .12
+            total = ticket_price + hotel_price + service_charge + vat
+
+            ret = ({
+                'id': pkg.id,
+                'name': pkg.destination,
+                'details': {
+                    'days': pkg.days,
+                    'notes': pkg.note,
+                    'date': pkg.Tickets.departureDate
+                },
+                'departureDate': pkg.Tickets.departureDate,
+                'itinerary': itirate( itineraryList ),
+                'price': {
+                    'ticket': pkg.Tickets.price,
+                    'hotel': pkg.Hotel.price,
+                    'serviceCharge': service_charge,
+                    'vat': vat
+                },
+                'ticket': {
+                    'id': pkg.Tickets.id,
+                    'flightNo': pkg.Tickets.flightNo,
+                    'origin': pkg.Tickets.origin,
+                    'destination': pkg.Tickets.arrival
+                },
+                'hotel': {
+                    'id': pkg.Hotel.id,
+                    'name': pkg.Hotel.name,
+                    'roomType': pkg.Hotel.roomType,
+                    'capacity': pkg.Hotel.capacity
+                },
+                'remainingSlots': pkg.remainingSlots,
+                'expirationDate': pkg.expirationDate,
+                'isExpired': pkg.isExpired
+            }, 200 )
+
+            return ret
 
 @API.route('/booking')
 @API.response(404, 'Not Found')
@@ -194,18 +248,33 @@ class PackageBookingApiId(Resource):
     @API.marshal_list_with(A_PACKAGE, envelope='packages')
     def get(self):
         token = token_details(request.headers['x-client-token'])
+        print( "SUBMITTED TOKEN:", token )
         user = User.query.filter(User.publicId == token['sub']).first()
-        bookings = PackageBooking.query.filter(PackageBooking.customer == user.id).all()
+        
+        bookings = (
+            PackageBooking.query
+                .filter(PackageBooking.customer == user.id)
+                .filter(PackageBooking.isArchived == False)
+        ).all()
+        if token[ "role" ] == "AD":
+            bookings = (
+                PackageBooking.query                    
+                    .filter(PackageBooking.isArchived == False)
+            ).all()
         view_packages = []
         view_itinerary = []
         for bookings in bookings:
+            print( "BOOKING NOW:", dir( bookings ) )
             package = Package.query.get(bookings.package)
             ticket = Ticket.query.get(package.flight)
             hotel = Hotel.query.get(package.hotel)
             itineraries = Itinerary.query.filter(Itinerary.package == package.id).all()
             view_itinerary.clear()
-            service_charge = (float(ticket.price) + float(hotel.price))*.02
+            ticketPrice = float( ticket.price )
+            hotelPrice = float( hotel.price )
+            service_charge = ( ticketPrice + hotelPrice ) *.02
             vat = float(service_charge) * .12
+            totalPrice = ticketPrice + hotelPrice + service_charge + vat
             for itinerary in itineraries:
                 view_itinerary.append(
                     {
@@ -215,7 +284,9 @@ class PackageBookingApiId(Resource):
                 )
             view_packages.append(
                 {
+                    'booking_id': bookings.id,
                     'id': package.id,
+                    'referenceNumber': bookings.referenceNumber,
                     'name': package.destination,
                     'details': {
                         'days': package.days,
@@ -225,10 +296,11 @@ class PackageBookingApiId(Resource):
                     'departureDate': ticket.departureDate,
                     'itinerary': itirate(itineraries),
                     'price': {
-                        'ticket': ticket.price,
-                        'hotel': hotel.price,
+                        'ticket': ticketPrice,
+                        'hotel': hotelPrice,
                         'serviceCharge': service_charge,
-                        'vat': vat
+                        'vat': vat,
+                        'total': totalPrice
                     },
                     'ticket': {
                         'id': ticket.id,
@@ -242,9 +314,31 @@ class PackageBookingApiId(Resource):
                         'roomType': hotel.roomType,
                         'capacity': hotel.capacity
                     },
+                    'user': {
+                        'id': bookings.customer
+                    },
                     'remainingSlots': package.remainingSlots,
                     'expirationDate': package.expirationDate,
-                    'isExpired': package.isExpired
+                    'isExpired': package.isExpired,
+                    'isPaid': bookings.isPaid
                 }
             )
-        return view_packages, 200
+            print( "BOOKING NOW!!!", view_packages )
+
+        return ( view_packages, 200 )
+@API.route('/booking/cancel')
+@API.response(404, 'Not Found')
+class PackageBookingApiId(Resource):        
+    @API.doc(security="apiKey", responses={200: 'Success', 400: 'Bad Request'})
+    @token_required
+    def post(self):
+        data = API.payload
+        id = data['id']        
+        packageBooking = PackageBooking.query.get( id )
+        package = Package.query.get( packageBooking.package )
+        packageBooking.isArchived = True
+        package.remainingSlots = package.remainingSlots + 1
+        db.session.commit()
+        print( "PACKAGE BOOKING:", packageBooking )
+        print( "ACTUAL PACKAGE:", package )
+        return { "message": "Package Successfully Canceled" }, 200

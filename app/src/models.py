@@ -2,7 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-
+ 
 # User Models
 class User(db.Model):
     id = db.Column("Id", db.Integer, primary_key=True)
@@ -199,7 +199,7 @@ class PackageBooking(db.Model):
     package = db.Column('PackagesFk', db.Integer, db.ForeignKey('packages.Id'))
     paymentMethod = db.Column('PaymentMethod', db.Integer)
     isPaid = db.Column('IsPaid', db.Boolean, default=False)
-
+    isArchived = db.Column('IsArchived', db.Boolean, default=False)
     __tablename__ = 'packagebookings'
 
 

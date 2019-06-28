@@ -166,7 +166,11 @@ class PackageBookingApi(Resource):
     def get(self):
         token = token_details(request.headers['x-client-token'])
         user = User.query.filter(User.publicId == token['sub']).first()
-        bookings = PackageBooking.query.filter(PackageBooking.customer == user.id).all()
+        bookings = ( 
+            PackageBooking.query
+                .filter( PackageBooking.customer == user.id )
+                .filter( PackageBooking.isArchived != True )
+        ).all()
         view_packages = []
         for booking in bookings:
             package = Package.query.get(booking.package)

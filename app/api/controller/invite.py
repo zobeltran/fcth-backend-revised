@@ -15,6 +15,7 @@ class InviteApi(Resource):
 	@api.expect( a_invite )
 	@token_required
 	def post(self):
+		url_redir = request.headers.get( "Referer" ) + "customer/registercustomer"
 		data = api.payload
 		token = token_details(request.headers['x-client-token'])
 		user = User.query.filter(User.publicId==token['sub']).first()
@@ -39,6 +40,8 @@ class InviteApi(Resource):
         	}
         }, 400)
 
+		print( "REFERER:", url_redir )
+
 		if not invited_exists and not user_exists:
 			new_invite = Invitations(
 				customer=user.id,
@@ -52,7 +55,7 @@ class InviteApi(Resource):
                 body=
                 	"This is an email informing that user " + user.lastName + ", " + user.firstName + " " + user.middleName + "( " + user.email + " ) has invited you to register to First Choice Travel Hub.\n" +
                     "The link below will allow you to sign up. Thank you.\n" +
-                    "localhost:8080/register",	
+                    "[ " + url_redir + " ]",	
                 recipients=[email]
             )
 			mail.send(msg)
@@ -71,13 +74,14 @@ class SuggestApi(Resource):
                                       })
 	@api.expect( a_suggest )
 	@token_required
-	def post(self):
+	def post(self):		
 		data = api.payload
 		token = token_details(request.headers['x-client-token'])
 		user = User.query.filter(User.publicId==token['sub']).first()
 
 		email = data[ "email" ]
 		pid = data[ "id" ]
+		url_redir = request.headers.get( "Referer" ) + "suggest?id=" + pid
 		
 		package = (
 			Package.query.filter( Package.id == pid )
@@ -111,7 +115,7 @@ class SuggestApi(Resource):
 			"\tService Charge: P" + str( service_charge ) + "\n" +
 			"\tVAT: P" + str( vat ) + "\n" +
 			"\tTotal: P" + str( total ) + "\n" +
-			"Flight Ticket: " + ( "0" * 2 if int( pkg.Tickets.id ) < 10 else 1 if int( pkg.Tickets.id ) >= 10 and int( pkg.Tickets.id ) < 100 else 0 ) + str( pkg.Tickets.id ) + " (" + pkg.Tickets.origin + "-" + pkg.Tickets.arrival + ")\n" +
+			"Flight Ticket: " + pkg.Tickets.flightNo + " (" + pkg.Tickets.origin + "-" + pkg.Tickets.arrival + ")\n" +
 			"Hotel: " + pkg.Hotel.name + "\n" +
 			"Slots Available: " + str( pkg.remainingSlots ) + "\n" +
 			"Departure Date: " + str( pkg.Tickets.departureDate ) + "\n" +
@@ -126,7 +130,7 @@ class SuggestApi(Resource):
             	"This is an email informing that user " + user.lastName + ", " + user.firstName + " " + user.middleName + "( " + user.email + " ) has suggested a package for you at First Choice Travel Hub.\n\n" +
             	pkg_msg + "\n\n" +
                 "The link below will allow you to book this. Thank you.\n" +
-                "localhost:8080/register",	
+                "[ " + url_redir + " ]",	
             recipients=[email]
         )
 		mail.send(msg)

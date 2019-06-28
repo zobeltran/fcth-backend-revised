@@ -35,7 +35,8 @@ A_PACKAGE_PRICES = API.model('Package Prices',
                              {'ticket': fields.Float(),
                               'hotel': fields.Float(),
                               'serviceCharge': fields.Float(),
-                              'vat': fields.Float()})
+                              'vat': fields.Float(),
+                              'total': fields.Float()})
 
 A_PACKAGE_SPECS = API.model('Package Specifications',
                             {'days': fields.String(),
@@ -49,7 +50,9 @@ A_ITINERARY = API.model('Itinerary',
 A_ITINERARY_INSERT = API.model('Itinerary Insert',
                                {'value': fields.String()})
 A_PACKAGE = API.model('Package Details',
-                      {'id': fields.Integer(),
+                      {'booking_id': fields.Integer(),
+                       'id': fields.Integer(),
+                       'referenceNumber': fields.String(),
                        'name': fields.String(),
                        'price': fields.Nested(A_PACKAGE_PRICES),
                        'departureDate': fields.Date(),

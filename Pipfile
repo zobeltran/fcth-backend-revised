@@ -21,6 +21,8 @@ flask-bcrypt = "*"
 flask-mail = "*"
 psycopg2-binary = "*"
 stripe = "*"
+xhtml2pdf = "*"
+cstringio = "*"
 
 [requires]
 python_version = "3.7"
