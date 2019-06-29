@@ -49,6 +49,10 @@ A_ITINERARY = API.model('Itinerary',
 
 A_ITINERARY_INSERT = API.model('Itinerary Insert',
                                {'value': fields.String()})
+A_USER_DETAILS = API.model( "User Details", {
+  'user': fields.Integer(),
+  'email': fields.String()
+})
 A_PACKAGE = API.model('Package Details',
                       {'booking_id': fields.Integer(),
                        'id': fields.Integer(),
@@ -60,9 +64,11 @@ A_PACKAGE = API.model('Package Details',
                        'details': fields.Nested(A_PACKAGE_SPECIFICATION),
                        'ticket': fields.Nested(A_TICKET_DETAILS),
                        'hotel': fields.Nested(A_HOTEL_DETAILS),
+                       'user': fields.Nested( A_USER_DETAILS ),
                        'remainingSlots': fields.Integer(),
                        'expirationDate': fields.Date(),
-                       'isExpired': fields.Boolean()
+                       'isExpired': fields.Boolean(),
+                       'isPaid': fields.Boolean()
                       })
 
 A_CREATE_PACKAGE_NEW = API.model('Create Package',

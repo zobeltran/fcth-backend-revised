@@ -142,7 +142,7 @@ class PaymentViaBankApi(Resource):
             payment_reference = 'PB' + referenceNumber
             print( "No ERROR" )
             new_payment = Payments(paymentReference=payment_reference,
-                                   bookingsReference=booking,
+                                   bookingReference=booking,
                                    paymentFor=payment_for,
                                    stripeCustomer=None,
                                    stripeChargeId=None,
@@ -258,3 +258,19 @@ class PaymentViaBankApi(Resource):
             return {'errors': {'status': 400,
                                'errorCode': 'E0001',
                                'message': errors}}, 400
+
+@api.route('/bank/confirm')
+@api.response(404, 'Not Found')
+class PaymentViaBankConfirmation(Resource):
+    @api.doc(security='apiKey', responses={200: 'Success',
+                                           400: 'Bad Request'
+                                          })
+    @token_required
+    def post(self):
+        data = api.payload
+        id = data[ 'id' ]
+        pkg = PackageBooking.query.filter( PackageBooking.id == id )[0]
+        print( "PACKAGE TRIGGERED", dir( pkg ) )
+        pkg.isPaid = True
+        db.session.commit()
+        return { 'message': 'Payment Successfully Confirmed' }, 200

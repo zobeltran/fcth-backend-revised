@@ -266,6 +266,7 @@ class PackageBookingApiId(Resource):
         for bookings in bookings:
             print( "BOOKING NOW:", dir( bookings ) )
             package = Package.query.get(bookings.package)
+            user = User.query.get( bookings.customer )
             ticket = Ticket.query.get(package.flight)
             hotel = Hotel.query.get(package.hotel)
             itineraries = Itinerary.query.filter(Itinerary.package == package.id).all()
@@ -315,7 +316,8 @@ class PackageBookingApiId(Resource):
                         'capacity': hotel.capacity
                     },
                     'user': {
-                        'id': bookings.customer
+                        'id': bookings.customer,
+                        'email': user.email
                     },
                     'remainingSlots': package.remainingSlots,
                     'expirationDate': package.expirationDate,
