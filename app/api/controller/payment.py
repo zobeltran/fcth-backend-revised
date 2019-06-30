@@ -155,28 +155,28 @@ class PaymentViaBankApi(Resource):
                 # db.session.commit()   
                 msg = Message(subject='Pay Via Bank Details', recipients=[email])
                 template = (
-                    "<h1>Sales Invoice<h1><img style='max-width:90%; height:150; float:right;' src='https://i.imgur.com/QzVFBLc.png'>" +
-                    "<br><br>CHARGED TO: " + user.lastName + ", " + user.firstName + " " + user.middleName +
-                    "<br><br>PAYMENT METHOD: PAY VIA BANK" 
-                    "<br><br>PAYMENT REFERENCE NUMBER: " + payment_reference +
-                    "<br><br>Deposit in Saving Account (BDO)" +
+                    "<img style='float:right !important; max-width:50%; height:40;' src='https://i.imgur.com/QzVFBLc.png'/><h1>Sales Invoice</h1>" +
+                    "<br>CHARGED TO: " + user.lastName + ", " + user.firstName + " " + user.middleName +
+                    "<br>PAYMENT METHOD: PAY VIA BANK" 
+                    "<br>PAYMENT REFERENCE NUMBER: " + payment_reference +
+                    "<br>Deposit in Saving Account (BDO)" +
                     "<br>Account Number: 123-123123-123" +
                     "<br>Account Name: First Choice Travel Hub" +
                     "<br>Email: renzo.beltran@via-appia.ph" +
                     "<br><br><table style='border: 1px solid black; border-collapse: collapse;'>" +
                     "<tr><td style='border: 1px solid black; border-collapse: collapse;'>TICKET</td>" +
-                    "<td style='border: 1px solid black; border-collapse: collapse;'>" +ticket_price + "</td></tr>" +
+                    "<td style='border: 1px solid black; border-collapse: collapse;'>" + str(ticket_price) + "</td></tr>" +
                     "<tr><td style='border: 1px solid black; border-collapse: collapse;'>HOTEL</td>" +
-                    "<td style='border: 1px solid black; border-collapse: collapse;'>" + hotel_price + "</td>" +
+                    "<td style='border: 1px solid black; border-collapse: collapse;'>" + str(hotel_price) + "</td>" +
                     "</tr><tr>" +
                     "<td style='border: 1px solid black; border-collapse: collapse;'>SERVICE CHARGE</td>" +
-                    "<td style='border: 1px solid black; border-collapse: collapse;'>" + service_charge + "</td>" +
+                    "<td style='border: 1px solid black; border-collapse: collapse;'>" + str(service_charge) + "</td>" +
                     "</tr><tr>" +
                     "<td style='border: 1px solid black; border-collapse: collapse;'>VAT</td>" +
-                    "<td style='border: 1px solid black; border-collapse: collapse;'>" + vat + "</td>" +
+                    "<td style='border: 1px solid black; border-collapse: collapse;'>" + str(vat) + "</td>" +
                     "</tr>" +
                     "<tr><td style='border: 1px solid black; border-collapse: collapse;'>TOTAL CHARGES</td>" +
-                    "<td style='border: 1px solid black; border-collapse: collapse;'>" + total + "</td>" +
+                    "<td style='border: 1px solid black; border-collapse: collapse;'>" + str(total) + "</td>" +
                     "</tr></table>"
                 )
                 filedest = "app/api/controller/pdfs/invoice.pdf"
