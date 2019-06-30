@@ -177,7 +177,7 @@ class PaymentViaBankApi(Resource):
                     "</tr>" +
                     "<tr><td style='border: 1px solid black; border-collapse: collapse;'>TOTAL CHARGES</td>" +
                     "<td style='border: 1px solid black; border-collapse: collapse;'>" + total + "</td>" +
-                    "</tr></table>" +
+                    "</tr></table>"
                 )
                 filedest = "app/api/controller/pdfs/invoice.pdf"
                 resultFile = open( filedest, "w+b" )
