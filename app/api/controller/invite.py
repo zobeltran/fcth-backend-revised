@@ -15,7 +15,7 @@ class InviteApi(Resource):
 	@api.expect( a_invite )
 	@token_required
 	def post(self):
-		url_redir = request.headers.get( "Referer" ) + "customer/registercustomer"
+		url_redir = "http://localhost:8080/customer/registercustomer"
 		data = api.payload
 		token = token_details(request.headers['x-client-token'])
 		user = User.query.filter(User.publicId==token['sub']).first()
@@ -81,7 +81,8 @@ class SuggestApi(Resource):
 
 		email = data[ "email" ]
 		pid = data[ "id" ]
-		url_redir = request.headers.get( "Referer" ) + "suggest?id=" + pid
+		# url_redir = request.headers.get( "Referer" ) + "suggest?id=" + str(pid)
+		url_redir = "http://localhost:8080/"
 		
 		package = (
 			Package.query.filter( Package.id == pid )
@@ -129,7 +130,8 @@ class SuggestApi(Resource):
             body=
             	"This is an email informing that user " + user.lastName + ", " + user.firstName + " " + user.middleName + "( " + user.email + " ) has suggested a package for you at First Choice Travel Hub.\n\n" +
             	pkg_msg + "\n\n" +
-                "The link below will allow you to book this. Thank you.\n" +
+				"Login or Sign Up to book this. Thank you.\n" +
+                # "The link below will allow you to book this. Thank you.\n" +
                 "[ " + url_redir + " ]",	
             recipients=[email]
         )

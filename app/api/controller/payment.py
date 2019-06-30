@@ -151,15 +151,33 @@ class PaymentViaBankApi(Resource):
             db.session.commit()
             if payment_for == 'Packages':
                 package = PackageBooking.query.filter(PackageBooking.referenceNumber == booking)
-                package.update({PackageBooking.paymentMethod: "BANK"})
-                db.session.commit()
+                # package.update({PackageBooking.paymentMethod: "BANK"})
+                # db.session.commit()   
                 msg = Message(subject='Pay Via Bank Details', recipients=[email])
                 template = (
-                    "<br><br>PAYMENT REFERENCE NUMBER: " + payment_reference + "<br>AMOUNT: " + str( int( amount ) ) +
+                    "<h1>Sales Invoice<h1><img style='max-width:90%; height:150; float:right;' src='https://i.imgur.com/QzVFBLc.png'>" +
+                    "<br><br>CHARGED TO: " + user.lastName + ", " + user.firstName + " " + user.middleName +
+                    "<br><br>PAYMENT METHOD: PAY VIA BANK" 
+                    "<br><br>PAYMENT REFERENCE NUMBER: " + payment_reference +
                     "<br><br>Deposit in Saving Account (BDO)" +
                     "<br>Account Number: 123-123123-123" +
                     "<br>Account Name: First Choice Travel Hub" +
-                    "<br>Email: renzo.beltran@via-appia.ph"
+                    "<br>Email: renzo.beltran@via-appia.ph" +
+                    "<br><br><table style='border: 1px solid black; border-collapse: collapse;'>" +
+                    "<tr><td style='border: 1px solid black; border-collapse: collapse;'>TICKET</td>" +
+                    "<td style='border: 1px solid black; border-collapse: collapse;'>" +ticket_price + "</td></tr>" +
+                    "<tr><td style='border: 1px solid black; border-collapse: collapse;'>HOTEL</td>" +
+                    "<td style='border: 1px solid black; border-collapse: collapse;'>" + hotel_price + "</td>" +
+                    "</tr><tr>" +
+                    "<td style='border: 1px solid black; border-collapse: collapse;'>SERVICE CHARGE</td>" +
+                    "<td style='border: 1px solid black; border-collapse: collapse;'>" + service_charge + "</td>" +
+                    "</tr><tr>" +
+                    "<td style='border: 1px solid black; border-collapse: collapse;'>VAT</td>" +
+                    "<td style='border: 1px solid black; border-collapse: collapse;'>" + vat + "</td>" +
+                    "</tr>" +
+                    "<tr><td style='border: 1px solid black; border-collapse: collapse;'>TOTAL CHARGES</td>" +
+                    "<td style='border: 1px solid black; border-collapse: collapse;'>" + total + "</td>" +
+                    "</tr></table>" +
                 )
                 filedest = "app/api/controller/pdfs/invoice.pdf"
                 resultFile = open( filedest, "w+b" )
