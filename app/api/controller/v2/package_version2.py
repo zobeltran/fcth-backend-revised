@@ -356,7 +356,6 @@ class PackageBookingUploadReceipt(Resource):
     @token_required
     def post(self):
         token = token_details(request.headers['x-client-token'])
-        #print( "DIR:", dir( request.form.get ) )
         data = API.payload
         file = request.files[ 'file' ]
         ext = file.filename.split( "." )[1]
