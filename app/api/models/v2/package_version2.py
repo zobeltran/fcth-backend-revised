@@ -68,7 +68,8 @@ A_PACKAGE = API.model('Package Details',
                        'remainingSlots': fields.Integer(),
                        'expirationDate': fields.Date(),
                        'isExpired': fields.Boolean(),
-                       'isPaid': fields.Boolean()
+                       'isPaid': fields.Boolean(),
+                       'ext': fields.String()
                       })
 
 A_CREATE_PACKAGE_NEW = API.model('Create Package',
@@ -80,3 +81,10 @@ A_CREATE_PACKAGE_NEW = API.model('Create Package',
                                   'remainingSlots': fields.Integer(),
                                   'expirationDate': fields.Date()
                                  })
+
+A_LATEST_PACKAGE = API.model('Lastest Package',
+                             {
+                                'id': fields.Integer(),
+                                'referenceNumber': fields.String(),
+                                'name': fields.String()
+                             })

@@ -152,7 +152,7 @@ class PaymentViaBankApi(Resource):
             if payment_for == 'Packages':
                 package = PackageBooking.query.filter(PackageBooking.referenceNumber == booking)
                 # package.update({PackageBooking.paymentMethod: "BANK"})
-                # db.session.commit()   
+                # db.session.commit()
                 msg = Message(subject='Pay Via Bank Details', recipients=[email])
                 template = (
                     "<img style='float:right !important; max-width:50%; height:40;' src='https://i.imgur.com/QzVFBLc.png'/><h1>Sales Invoice</h1>" +
@@ -165,18 +165,18 @@ class PaymentViaBankApi(Resource):
                     "<br>Email: renzo.beltran@via-appia.ph" +
                     "<br><br><table style='border: 1px solid black; border-collapse: collapse;'>" +
                     "<tr><td style='border: 1px solid black; border-collapse: collapse;'>TICKET</td>" +
-                    "<td style='border: 1px solid black; border-collapse: collapse;'>" + str(ticket_price) + "</td></tr>" +
+                    "<td style='border: 1px solid black; border-collapse: collapse;'>" + str(ticket_price) + " PHP</td></tr>" +
                     "<tr><td style='border: 1px solid black; border-collapse: collapse;'>HOTEL</td>" +
-                    "<td style='border: 1px solid black; border-collapse: collapse;'>" + str(hotel_price) + "</td>" +
+                    "<td style='border: 1px solid black; border-collapse: collapse;'>" + str(hotel_price) + " PHP</td>" +
                     "</tr><tr>" +
                     "<td style='border: 1px solid black; border-collapse: collapse;'>SERVICE CHARGE</td>" +
-                    "<td style='border: 1px solid black; border-collapse: collapse;'>" + str(service_charge) + "</td>" +
+                    "<td style='border: 1px solid black; border-collapse: collapse;'>" + str(service_charge) + " PHP</td>" +
                     "</tr><tr>" +
                     "<td style='border: 1px solid black; border-collapse: collapse;'>VAT</td>" +
-                    "<td style='border: 1px solid black; border-collapse: collapse;'>" + str(vat) + "</td>" +
+                    "<td style='border: 1px solid black; border-collapse: collapse;'>" + str(vat) + " PHP</td>" +
                     "</tr>" +
                     "<tr><td style='border: 1px solid black; border-collapse: collapse;'>TOTAL CHARGES</td>" +
-                    "<td style='border: 1px solid black; border-collapse: collapse;'>" + str(total) + "</td>" +
+                    "<td style='border: 1px solid black; border-collapse: collapse;'>" + str(total) + " PHP</td>" +
                     "</tr></table>"
                 )
                 filedest = "app/api/controller/pdfs/invoice.pdf"

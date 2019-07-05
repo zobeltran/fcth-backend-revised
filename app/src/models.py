@@ -245,6 +245,8 @@ class Payments(db.Model):
     bookingReference = db.Column("BookingReference", db.String(50))
     paymentFor = db.Column("PaymentFor", db.String(50))
     paymentMethod = db.Column("PaymentMethod", db.String(50))
+    paidOn = db.Column( "PaidOn", db.DateTime )
+    extension = db.Column( "Extension", db.String(10) )
     stripeCustomer = db.Column("StripeCustomer",
                                db.ForeignKey('stripcustomers.Id'))
     stripeChargeId = db.Column("StripChargeId", db.String(50))

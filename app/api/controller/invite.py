@@ -15,6 +15,7 @@ class InviteApi(Resource):
 	@api.expect( a_invite )
 	@token_required
 	def post(self):
+		# url_redir = request.headers.get( "Referer" ) + "customer/registercustomer"
 		url_redir = "http://localhost:8080/customer/registercustomer"
 		data = api.payload
 		token = token_details(request.headers['x-client-token'])
@@ -81,7 +82,7 @@ class SuggestApi(Resource):
 
 		email = data[ "email" ]
 		pid = data[ "id" ]
-		# url_redir = request.headers.get( "Referer" ) + "suggest?id=" + str(pid)
+		# url_redir = request.headers.get( "Referer" ) + "suggest?id=" + pid
 		url_redir = "http://localhost:8080/"
 		
 		package = (

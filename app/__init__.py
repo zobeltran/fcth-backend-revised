@@ -10,7 +10,7 @@ from flask_mail import Mail
 from app.api.controller.user import mail
 
 # Flask Activation
-app = Flask(__name__)
+app = Flask(__name__, static_folder='../receipt_uploads')
 
 # Set Configurations
 secret_key = getenv('SECRET_KEY')

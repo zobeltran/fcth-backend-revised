@@ -2,17 +2,20 @@
 """
 Package API version 2
 """
-from flask import request, render_template
+from datetime import datetime as dt
+import os
+from flask import Flask, request, render_template, Response, url_for
 from datetime import datetime
 from dateutil.parser import parse
 from flask_restplus import Resource, reqparse
-from app.src.models import db, Package, Hotel, Ticket, Itinerary, User, PackageBooking
-from app.api.models.v2.package_version2 import API, A_CREATE_PACKAGE_NEW, A_PACKAGE
+from app.src.models import db, Package, Hotel, Ticket, Itinerary, User, PackageBooking, Payments
+from app.api.models.v2.package_version2 import API, A_CREATE_PACKAGE_NEW, A_PACKAGE, A_LATEST_PACKAGE
 from app.src.helpers.decorators import token_required, token_details
 
 ERRORS = []
 NOW = datetime.now()
 
+app = Flask( __name__ )
 def itirate(items):
     view_items = []
     if len(items) == 1:
@@ -136,7 +139,6 @@ class PackagedApi(Resource):
             view_packages = []
             view_itinerary = []
             for package in packages:
-                print(package.id)
                 ticket = Ticket.query.get(package.flight)
                 hotel = Hotel.query.get(package.hotel)
                 itineraries = Itinerary.query.filter(Itinerary.package == package.id).all()
@@ -144,7 +146,6 @@ class PackagedApi(Resource):
                 service_charge = (float(ticket.price) + float(hotel.price))*.02
                 vat = float(service_charge) * .12
                 for itinerary in itineraries:
-                    print(itinerary)
                     view_itinerary.append(
                         {
                             'id': itinerary.id,
@@ -264,8 +265,8 @@ class PackageBookingApiId(Resource):
         view_packages = []
         view_itinerary = []
         for bookings in bookings:
-            print( "BOOKING NOW:", dir( bookings ) )
             package = Package.query.get(bookings.package)
+            receipt = Payments.query.filter( Payments.bookingReference == bookings.referenceNumber ).first()
             user = User.query.get( bookings.customer )
             ticket = Ticket.query.get(package.flight)
             hotel = Hotel.query.get(package.hotel)
@@ -322,12 +323,15 @@ class PackageBookingApiId(Resource):
                     'remainingSlots': package.remainingSlots,
                     'expirationDate': package.expirationDate,
                     'isExpired': package.isExpired,
-                    'isPaid': bookings.isPaid
+                    'isPaid': bookings.isPaid,
+                    # 'ext': receipt.extension,
+                    'last_purchased': 'helo',
+                    'purchases': 'world'
                 }
             )
-            print( "BOOKING NOW!!!", view_packages )
 
         return ( view_packages, 200 )
+
 @API.route('/booking/cancel')
 @API.response(404, 'Not Found')
 class PackageBookingApiId(Resource):        
@@ -344,3 +348,68 @@ class PackageBookingApiId(Resource):
         print( "PACKAGE BOOKING:", packageBooking )
         print( "ACTUAL PACKAGE:", package )
         return { "message": "Package Successfully Canceled" }, 200
+
+@API.route('/booking/upload')
+@API.response(404, 'Not Found')
+class PackageBookingUploadReceipt(Resource):        
+    @API.doc(security="apiKey", responses={200: 'Success', 400: 'Bad Request'})
+    @token_required
+    def post(self):
+        token = token_details(request.headers['x-client-token'])
+        #print( "DIR:", dir( request.form.get ) )
+        data = API.payload
+        file = request.files[ 'file' ]
+        ext = file.filename.split( "." )[1]
+        print( "EXTENSIONNNNN:", ext )
+        refnum = request.form.get( 'refnum' )
+        paymentExists = Payments.query.filter( Payments.bookingReference == refnum ).first()
+        now = dt.now()
+        if not paymentExists:
+            new_payment = Payments(
+                bookingReference=refnum,
+                paymentFor="Packages",
+                paymentMethod="Bank",
+                paidOn=now,
+                extension=ext
+            )
+            db.session.add( new_payment )
+        else:
+            paymentExists.paidOn = now
+            paymentExists.extension = ext
+        db.session.commit()
+        # date = now.strftime( "%Y-%m-%d" )
+        # time = now.strftime( "%H:%M:%S" )
+        # args = [ token['sub'], file.filename ]
+        # complete_fname = "_".join( args )
+        file.save( "receipt_uploads/" + refnum + "." + ext )
+        ret = ({ "message": "Hello there" }, 200 )
+
+@API.route('/booking/viewreceipt')
+@API.response(404, 'Not Found')
+class PackageBookingViewReceipt(Resource):        
+    @API.doc(security="apiKey", responses={200: 'Success', 400: 'Bad Request'})
+    def get(self):
+        print( "REQUEST QUERIES", request.args )
+        refnum = request.args.get( 'refnum' )
+        ext = Payments.query.filter( Payments.bookingReference == refnum ).first().extension
+
+        #return render_template( 'index.html', image=refnum + "." + ext )
+        res = Response( "<img src='" + url_for( 'static', filename=refnum + "." + ext ) + "'/>")
+        res.headers['Content-Type'] = 'text/html'
+        return res
+
+@API.route('/booking/latest')
+@API.response(404, 'NOT Found')
+class PackageReport(Resource):
+    @API.doc(security="apiKey", responses={200: 'Success', 400: 'Bad Request'})
+    def get(self):
+        bookings = PackageBooking.query.order_by(PackageBooking.id.desc()).first()
+        print(bookings)
+        package = Package.query.get(bookings.package)
+        viewLatest = {
+            'id': bookings.id,
+            'referenceNumber': bookings.referenceNumber,
+            'name': package.destination
+        }
+        return API.marshal(viewLatest, A_LATEST_PACKAGE,
+                           envelope="package"), 200
